@@ -5,7 +5,7 @@ contract SmartDeed {
 
   struct LegalEntity {
     unit id;
-    unit name;
+    string name;
     unit verified;
   }
   struct Trust {
