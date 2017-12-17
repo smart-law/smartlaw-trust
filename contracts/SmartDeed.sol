@@ -3,16 +3,34 @@ pragma solidity ^0.4.0;
 contract SmartDeed {
   address owner;
 
-  struct Property {
+  struct LegalEntity {
+    unit id;
+    unit name;
+    unit verified;
+  }
+  struct Trust {
+    uint id;
+    string status;
+  }
+  struct RealProperty {
     uint id;
     string legalDescription;
     string description;
-    bool borrowerPaid;
   }
   struct Deed {
     unit id;
-    unit currentOwner;
-    unit newOwner;
+    unit trust;
+    unit verified;
+  }
+  struct Beneficiary {
+    unit id;
+    unit LegalEntity;
+    unit Trust;
+  }
+  struct Loan {
+    uint id;
+    uint trust;
+    uint amount;
   }
 
   function SmartDeed() {
