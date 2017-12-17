@@ -16,6 +16,7 @@ contract SmartDeed {
     uint id;
     string legalDescription;
     string description;
+    address expense_funds;
   }
   struct Deed {
     unit id;
@@ -31,32 +32,76 @@ contract SmartDeed {
     uint id;
     uint trust;
     uint amount;
+    uint status;
   }
+
+  struct Payments {
+    uint id;
+    uint loan;
+    uint amount;
+    uint conversion_rate;
+  }
+
 
   function SmartDeed() {
     owner = msg.sender;
   }
 
-  function newLegalEntity(){
-
+  function newLegalEntity(name){
+      //insert new legal entity, unverified
+      return uint id;
   }
 
   function verifyLegalEntity(id){
     if (msg.sender != owner) return;
     //update LegalEntity.id >verified = true
+    return true;
   }
 
-  function newProperty() {
-    //to do
+  function newRealProperty() {
+    //insert property, unverified
+    return uint id;
+  }
+
+  function newDeed(){
+      //insert new deed into struct
+      return uint id;
   }
 
   function notarizeDeed() {
     if (msg.sender != owner) return;
-    //to do
+    //mark deed as verified
+    return true;
   }
 
-  function forclosure() {
-    //to do
+  function foreclosure(trust_id) {
+    //start auction for trust property
+  }
+
+  function transferBeneficialInterest(trust_id,from,to){
+
+  }
+
+  function getTrustInfo(trust_id){
+
+  }
+
+  function getTrustBeneficiaries(trust_id){
+    return json;
+  }
+
+  function disolveTrust(trust_id){
+    if (msg.sender != trust.beneficiary) { throw; }
+    //mark trust for disolution
+
+  }
+
+  function startAuction(){
+
+  }
+
+  function bid() payable{
+    //let anyone bid on auction.
   }
 
 }
