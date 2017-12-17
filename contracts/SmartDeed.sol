@@ -58,17 +58,17 @@ contract SmartDeed {
     return true;
   }
 
-  function newRealProperty() {
+  function newRealProperty(legalDescription) {
     //insert property, unverified
     return uint id;
   }
 
-  function newDeed(){
+  function newDeed(property_id){
       //insert new deed into struct
       return uint id;
   }
 
-  function notarizeDeed() {
+  function notarizeDeed(deed_id) {
     if (msg.sender != owner) return;
     //mark deed as verified
     return true;
