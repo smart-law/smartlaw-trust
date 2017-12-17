@@ -37,6 +37,15 @@ contract SmartDeed {
     owner = msg.sender;
   }
 
+  function newLegalEntity(){
+
+  }
+
+  function verifyLegalEntity(id){
+    if (msg.sender != owner) return;
+    //update LegalEntity.id >verified = true
+  }
+
   function newProperty() {
     //to do
   }
