@@ -10,6 +10,7 @@ contract SmartDeed {
   }
   struct Trust {
     uint id;
+    string name;
     string status;
   }
   struct RealProperty {
