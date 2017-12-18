@@ -1,8 +1,8 @@
 # IRREVOCABLE TRUST AGREEMENT
 
-THIS IRREVOCABLE TRUST AGREEMENT is made this {date}, by and between {grantor} (the "Grantor" and "Beneficiary"), and SmartLaw LLC (the "Trustee"). The name of this trust shall be SmartLaw Trust {id}.
+THIS IRREVOCABLE TRUST AGREEMENT is made this {date}, by and between {grantor} (the "Grantor" and "Beneficiary"), and SmartLaw LLC (the "Trustee"). The name of this trust shall be 'SmartLaw Trust {id}''.
 
-**Purpose:** This trust is established for the purpose of holding property, for the benefit of the beneficiary, in accordance with future agreements and assignments made using the Ethereum blockchain.
+**Purpose of Trust:** This trust is established for the purpose of holding property, for the benefit of the beneficiary, in accordance with future agreements and assignments made using the Ethereum blockchain.
 
 The Trustee shall hold the trust property in accordance with the following provisions:
 
@@ -18,7 +18,7 @@ The Trustee shall hold the trust property in accordance with the following provi
 
 **Dissolution of the trust:** The beneficiary may call the dissolveTrust() function on the Ethereum blockchain to dissolve this trust. In this event, the Trustee shall convey, transfer and deed the property of the trust to the beneficiary.
 
-**Loans secured by property of trust:** The SmartLaw smart-contract allows for the beneficiary to secure loans with their beneficial interest in the trust. During such a loan, certain functions of the smart-contract may not be available to the beneficiary. If the beneficiary defaults under these loan arrangements their beneficial interest in the trust may be permanently lost. The actual process for handling default will be performed by the smart-contract, and may include a public auction on the blockchain where their beneficial interest is sold to the highest bidder.
+**Loans secured by property of trust:** The smart-contract allows for the beneficiary to grant secured interests in the trust, for purposes of securing a loan. During such a loan, certain functions of the smart-contract may not be available to the beneficiary. If the beneficiary defaults under these loan arrangements their beneficial interest in the trust may be permanently lost, or transferred to the secured party. The actual terms and process for default will be executed by the smart-contract, and may include a public auction on the blockchain where their beneficial interest is sold to the highest bidder.
 
 **Private trust:** The trust herein created is a private trust, and the Trustee shall not be required to obtain the order of approval of any Court for the exercise of any powers or discretion herein given.  The Trustee shall not be required to enter into any bond as Trustee nor shall it be required to return to any Court any periodic formal accounting of its administration of the said trust.
 
