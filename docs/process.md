@@ -1,6 +1,13 @@
-### Process to transfer property you already own into a SmartLaw Trust.
+## Putting Property into a SmartLaw Trust
+
+### If you own the property free and clear
 
 * Call the newLegalEntity() function and input your legal name.
 * Upload copies of your ID and a selfie on the SmartLaw website, or email them for verification.
-* Print copies of the trust document
+* Call the newTrust() function with the name of your trust
+* Call the newRealProperty() function with the legalDescription of your real property
+* Call the newDeed() function with the property_id and the trust_id
+* Print copies of the trust document. Sign and notarize. Upload document to SmartLaw website for verification.
+* Print copies of warranty deed document
 * Sign and notarize the document and record at County Recorders Office
+* Order a title insurance package through a title company
