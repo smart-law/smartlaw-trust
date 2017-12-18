@@ -5,9 +5,7 @@ THIS IRREVOCABLE TRUST AGREEMENT is made this 15th day of December, 2017, by and
 
 ### ARTICLE I.
 
-For the purpose of establishing an Irrevocable Trust to provide property hereinafter designated and for the other purposes hereinafter set forth, the Grantor does hereby convey, sell, deed, transfer and deliver to the Trustee the property as itemized and described in Schedule “A” which is attached hereto.
-
-All of said property together with all subsequent additions thereto is to be held and administered by said Trustee as a trust, subject to the following uses, terms and conditions:
+This trust is established for the purpose of holding property in accordance with agreements made using an Ethereum smart contract. A smart contract is an agreement whose execution is automated by computer code.
 
 The Trustee shall hold the trust property in accordance with the following provisions:
 
@@ -19,7 +17,7 @@ The Trustee shall hold the trust property in accordance with the following provi
 * The Trustee may rely fully on the public records of the Ethereum blockchain to ascertain all records of assignment of beneficial interest.
 * The name of the current beneficiary may be determined at any time by calling the getBeneficiary() function of the SmartNote contract.
 * The SmartNote Ethereum contract allows for the holder of the beneficial token to create __________.
-* The SmartNote Ethereum contract allows for the holder of the Conveyance Token to use the Conveyance Token as collateral in loans managed by the Ethereum blockchain. The possessor of the Conveyance Token may digitally sign to transfer the conveyance token into escrow using smart contracts. A smart contract is an agreement whose execution is automated by computer code.
+* The SmartNote Ethereum contract allows for the holder of the Conveyance Token to use the Conveyance Token as collateral in loans managed by the Ethereum blockchain. The possessor of the Conveyance Token may digitally sign to transfer the conveyance token into escrow using smart contracts.
 
 ### ARTICLE II.
 The trust herein created is a private trust, and the Trustee shall not be required to obtain the order of approval of any Court for the exercise of any powers or discretion herein given.  The Trustee shall not be required to enter into any bond as Trustee nor shall it be required to return to any Court any periodic formal accounting of its administration of the said trust, but said Trustee shall render annual accounts to the beneficiary or beneficiaries of such trust.
