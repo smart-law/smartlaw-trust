@@ -2,26 +2,23 @@
 
 THIS IRREVOCABLE TRUST AGREEMENT is made this {date}, by and between {grantor} (the "Grantor" and "Beneficiary"), and SmartLaw LLC (the "Trustee"). The name of this trust shall be SmartLaw Trust {id}.
 
-**Purpose:** This trust is established for the purpose of holding property, for the benefit of the beneficiary, in accordance with future agreements and assignments made using an Ethereum smart contract. A smart contract is an agreement whose execution is automated by computer code.
+**Purpose:** This trust is established for the purpose of holding property, for the benefit of the beneficiary, in accordance with future agreements and assignments made using the Ethereum blockchain.
 
 The Trustee shall hold the trust property in accordance with the following provisions:
 
-**Assignment of beneficial interest:** The Trustee will assign to the beneficiary a digital token representing the rights to receive by way of conveyance the trust property. A unique identifier for this token is found in Schedule "A". This will be referred to as the Conveyance Token.
+**Trust recorded on blockchain:** A record of this trust has been registered on the Ethereum public blockchain with a unique identifier (referenced in Schedule A.) The public Ethereum blockchain will serve as an official record-keeping and record-updating mechanism for this trust. The Trustee may rely fully on these records in good faith.
 
-*The Grantor may transfer this Conveyance Token through the SmartNote Ethereum contract. Transferring this digital token on the blockchain assigns full beneficial interest in this trust to the recipient of the transfer, and assigns to the holder of the Conveyance Token the exclusive right to request that the Trustee convey the property and dissolve the trust.
-The beneficiary may assign all beneficial interest in the trust property by calling the assignBeneficialInterest() function in the smart contract.*
+**Use of smart contracts:** The ability to update records related to this trust on the blockchain is regulated by a smart contract. Smart contracts are immutable computer code systems designed to facilitate, verify, record, and enforce certain protocols, using distributed public records stored in a blockchain.
 
-**Verification of beneficiary:** The identity of the beneficiary may be ascertained by performing a lookup on the public Ethereum blockchain using the getBeneficiary() function of the SmartLaw contract.
+**Digital signatures:** The security of updates to records through the smart contract is regulated through cryptographic digital signatures. All parties agree that their cryptographic signatures will have the full legal weight and significance of a physical signature. Public keys for each party are recorded in Schedule A.
 
-*The name of the current beneficiary may be determined at any time by calling the getBeneficiary() function of the SmartNote contract.*
+**Assignment of beneficial interest:** The beneficiary may use the Smart Contract to assign and transfer all rights, title, and beneficial interest under the trust, including the powers of direction and revocation, and the right to dissolve the trust and receive the trust property in conveyance. This assignment may not be done offline, but must be performed by calling the assignBeneficialInterest() function on the smart contract.
 
-**Dissolution of the trust:** The beneficiary may call the DissolveTrust() function on the Ethereum blockchain to dissolve this trust. In this event, the Trustee shall convey, transfer and deed the property of the trust to the beneficiary.
+**Verification of beneficiary:** The identity of the current beneficiary may be ascertained by performing a lookup on the public Ethereum blockchain using the getBeneficiary() function of the SmartLaw contract.
 
-*Requests for the Trustee to convey the property and dissolve the trust may not be made in writing, but must be executed through the SmartNote Ethereum contract by calling the RequestConveyance() function. Only the holder of the conveyance token is able to call this function.*
+**Dissolution of the trust:** The beneficiary may call the dissolveTrust() function on the Ethereum blockchain to dissolve this trust. In this event, the Trustee shall convey, transfer and deed the property of the trust to the beneficiary.
 
-**Reliance on Blockchain:** The Trustee may rely fully on the public records of the Ethereum blockchain to ascertain all records of assignment of beneficial interest.
-
-**Loans secured by property of trust:** The SmartNote Ethereum contract allows for the holder of the Conveyance Token to use the Conveyance Token as collateral in loans managed by the Ethereum blockchain. The possessor of the Conveyance Token may digitally sign to transfer the conveyance token into escrow using smart contracts.
+**Loans secured by property of trust:** The SmartLaw smart-contract allows for the beneficiary to secure loans with their beneficial interest in the trust. During such a loan, certain functions of the smart-contract may not be available to the beneficiary. If the beneficiary defaults under these loan arrangements their beneficial interest in the trust may be permanently lost. The actual process for handling default will be performed by the smart-contract, and may include a public auction on the blockchain where their beneficial interest is sold to the highest bidder.
 
 **Private trust:** The trust herein created is a private trust, and the Trustee shall not be required to obtain the order of approval of any Court for the exercise of any powers or discretion herein given.  The Trustee shall not be required to enter into any bond as Trustee nor shall it be required to return to any Court any periodic formal accounting of its administration of the said trust, but said Trustee shall render annual accounts to the beneficiary or beneficiaries of such trust.
 
