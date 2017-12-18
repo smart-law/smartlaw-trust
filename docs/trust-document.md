@@ -8,6 +8,8 @@ The Trustee shall hold the trust property in accordance with the following provi
 
 **Assignment of beneficial interest:** The Trustee will assign to the beneficiary a digital token representing the rights to receive by way of conveyance the trust property. A unique identifier for this token is found in Schedule "A". This will be referred to as the Conveyance Token.
 
+**Assertation of beneficiary:** The identity of the beneficiary may be ascertained by performing a lookup on the public Ethereum blockchain using the getBeneficiary() function of the SmartLaw contract.
+
 * The Grantor may not request reconveyance of the trust property, and may not revoke any portion of this trust agreement, without access to and control of this digital token.
 * The Grantor may transfer this Conveyance Token through the SmartNote Ethereum contract. Transferring this digital token on the blockchain assigns full beneficial interest in this trust to the recipient of the transfer, and assigns to the holder of the Conveyance Token the exclusive right to request that the Trustee convey the property and dissolve the trust.
 * Requests for the Trustee to convey the property and dissolve the trust may not be made in writing, but must be executed through the SmartNote Ethereum contract by calling the RequestConveyance() function. Only the holder of the conveyance token is able to call this function.
