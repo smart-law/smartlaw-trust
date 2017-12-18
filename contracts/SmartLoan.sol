@@ -7,8 +7,4 @@ contract SmartLoan {
   function payment() payable {
     //to do
   }
-  function default() {
-    //to do
-    //
-  }
 }
