@@ -20,15 +20,11 @@ The Trustee shall hold the trust property in accordance with the following provi
 
 **Loans secured by property of trust:** The SmartLaw smart-contract allows for the beneficiary to secure loans with their beneficial interest in the trust. During such a loan, certain functions of the smart-contract may not be available to the beneficiary. If the beneficiary defaults under these loan arrangements their beneficial interest in the trust may be permanently lost. The actual process for handling default will be performed by the smart-contract, and may include a public auction on the blockchain where their beneficial interest is sold to the highest bidder.
 
-**Private trust:** The trust herein created is a private trust, and the Trustee shall not be required to obtain the order of approval of any Court for the exercise of any powers or discretion herein given.  The Trustee shall not be required to enter into any bond as Trustee nor shall it be required to return to any Court any periodic formal accounting of its administration of the said trust, but said Trustee shall render annual accounts to the beneficiary or beneficiaries of such trust.
+**Private trust:** The trust herein created is a private trust, and the Trustee shall not be required to obtain the order of approval of any Court for the exercise of any powers or discretion herein given.  The Trustee shall not be required to enter into any bond as Trustee nor shall it be required to return to any Court any periodic formal accounting of its administration of the said trust.
 
 **Irrevocability** This trust is and shall be irrevocable and after the execution of this Trust Agreement the Grantor shall have no right, title, or interest in or power, privilege or incident of ownership in regard to any of said property and/or money and shall have no right to alter, amend, revoke or terminate this trust or any provision hereof.
 
-*The Grantor may not request reconveyance of the trust property, and may not revoke any portion of this trust agreement, without access to and control of this digital token.
-
-The Grantor expressly waives all rights and powers, whether alone or in conjunction with others, and regardless of when or from what source he may have acquired such rights or powers, to alter, amend, revoke, or terminate the trusts, or any of the terms of this Agreement, in whole or in part. By this instrument the Grantor relinquishes absolutely and forever all his possession or enjoyment of, or right to the income from, the trust property, and all his right and power, whether alone or in conjunction with others, to designate the persons who shall possess or enjoy the trust property, or the income.*
-
-**Trustee compensation** The Trustee shall be entitled to receive reasonable compensation for its services hereunder. Such compensation may be collected annually by the Trustee and shall be shown in its annual accounting. *Allow for trustee fees to be handled through smart-contract*
+**Trustee compensation** The Trustee shall be entitled to receive reasonable compensation for its services hereunder.
 
 **Trustee not liable:** The Trustee shall not be liable for any loss to the trust estate occasioned by its acts in good faith, and in any event shall be liable only for its own willful negligence or default, and not for honest errors of judgment or for interest on uninvested funds.
 
