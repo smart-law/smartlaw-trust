@@ -1,5 +1,6 @@
 # Schedule A
 
+A | B
 ------------ | -------------
 Trustee | Smart Deed, LLC, PO Box 803, Hayden, ID, 83815
 Beneficiary : {User's Name and address}
