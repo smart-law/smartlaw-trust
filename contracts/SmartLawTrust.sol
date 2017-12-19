@@ -7,6 +7,7 @@ contract SmartDeed {
     string name;
     bool verified;
     address ownerAddress;
+    bool accreditedInvestor;
     bool exist;
   }
   mapping (bytes32 => LegalEntity) LegalEntities;
