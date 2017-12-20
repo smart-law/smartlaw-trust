@@ -98,6 +98,10 @@ contract SmartDeed {
 
   function verifyLegalEntity(bytes32 _key) public owner_only(msg.sender) entity_exist(_key) {
     LegalEntities[_key].verified = true;
+
+    //Legal Statement:
+    //By calling this function, SmartLaw LLC certifies that it has received
+    //copies of identity documents associated with this address.
   }
 
   function getLegalEntity(bytes32 _key) public entity_exist(_key) constant returns (string, bool, address) {
@@ -169,6 +173,14 @@ contract SmartDeed {
     var trust = Trusts[_key];
     trust.trustor = _trustor;
   } */
+
+  function dissolveTrust(){
+    /*
+    Legal Statement:
+    By calling this function, the beneficiary(ies) request that the trust be dissolved
+    and the trust property be deeded to the beneficiary(ies)
+    */
+  }
 
   function encrypt(uint _number) public returns (bytes32) {
     return keccak256(_number);
