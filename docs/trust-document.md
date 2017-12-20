@@ -2,11 +2,9 @@
 
 THIS IRREVOCABLE TRUST AGREEMENT is made this {date}, by and between {grantor} (the "Grantor" and "Beneficiary"), and SmartLaw LLC (the "Trustee"). The name of this trust shall be 'SmartLaw Trust {id}''.
 
-**Purpose of trust:** This trust is established for the purpose of holding property, for the benefit of the beneficiary, in accordance with future agreements and assignments made using the Ethereum blockchain.
+**Purpose of trust:** This trust is established for the purpose of holding property, for the benefit of the beneficiary(ies, in accordance with future agreements and assignments made using the Ethereum blockchain, according to the following provisions:
 
-**Trust property:** The trust property is listed in Schedule A. The Grantor hereby grants, deeds, and conveys said property to this trust.
-
-The Trustee shall hold the trust property in accordance with the following provisions:
+**Trust property:** The trust property is listed in Schedule A. Said property shall be deeded by the Grantor into the trust.
 
 **Trust recorded on blockchain:** A record of this trust has been registered on the Ethereum public blockchain with a unique identifier (referenced in Schedule A.) The public Ethereum blockchain will serve as an official record-keeping and record-updating mechanism for this trust. The Trustee may rely fully on these records in good faith.
 
