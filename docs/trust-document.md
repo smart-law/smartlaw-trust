@@ -2,11 +2,9 @@
 
 THIS IRREVOCABLE TRUST AGREEMENT is made this {date}, by and between {grantor} (the "Grantor" and "Beneficiary"), and SmartLaw LLC (the "Trustee"). The name of this trust shall be 'SmartLaw Trust {id}''.
 
-**Purpose of trust:** This trust is established for the purpose of holding property, for the benefit of the beneficiary, in accordance with future agreements and assignments made using the Ethereum blockchain.
+**Purpose of trust:** This trust is established for the purpose of holding property, for the benefit of the beneficiary(ies, in accordance with future agreements and assignments made using the Ethereum blockchain, according to the following provisions:
 
-**Trust property:** The trust property is listed in Schedule A. The Grantor hereby grants, deeds, and conveys said property to this trust.
-
-The Trustee shall hold the trust property in accordance with the following provisions:
+**Trust property:** The trust property is listed in Schedule A. Said property shall be deeded by the Grantor into the trust.
 
 **Trust recorded on blockchain:** A record of this trust has been registered on the Ethereum public blockchain with a unique identifier (referenced in Schedule A.) The public Ethereum blockchain will serve as an official record-keeping and record-updating mechanism for this trust. The Trustee may rely fully on these records in good faith.
 
@@ -14,7 +12,7 @@ The Trustee shall hold the trust property in accordance with the following provi
 
 **Digital signatures:** The security of updates to records through the smart contract is regulated through cryptographic digital signatures. All parties agree that their cryptographic signatures will have the full legal weight and significance of a physical signature. Public keys for each party are recorded in Schedule A.
 
-**Assignment of beneficial interest:** The beneficiary may use the Smart Contract to assign and transfer all rights, title, and beneficial interest under the trust, including the powers of direction and revocation, and the right to dissolve the trust and receive the trust property in conveyance. This assignment may not be done offline, but must be performed by calling the assignBeneficialInterest() function on the smart contract.
+**Assignment of beneficial interest:** A beneficiary may assign all rights associated with the beneficiary's interest under the trust. This assignment may not be done offline, but must be performed by calling the assignBeneficialInterest() function on the smart contract.
 
 **Verification of beneficiary:** The identity of the current beneficiary may be ascertained by performing a lookup on the public Ethereum blockchain using the getBeneficiary() function of the SmartLaw contract.
 
@@ -26,9 +24,9 @@ The Trustee shall hold the trust property in accordance with the following provi
 
 **Irrevocability** This trust is and shall be irrevocable and after the execution of this Trust Agreement the Grantor shall have no right, title, or interest in or power, privilege or incident of ownership in regard to any of said property and/or money and shall have no right to alter, amend, revoke or terminate this trust or any provision hereof.
 
-**Trustee compensation** The Trustee shall be entitled to receive reasonable compensation for its services. A standard fee schedule is included in Schedule B.
+**Trustee compensation** The Trustee shall be entitled to receive compensation for its services. A fee schedule is included in Schedule B.
 
-**Trustee not liable:** The Trustee shall not be liable for any loss to the trust estate occasioned by its acts in good faith, and in any event shall be liable only for its own willful negligence or default, and not for honest errors of judgment or for interest on uninvested funds.
+**Trustee not liable:** The Trustee shall not be liable for any loss to the trust estate occasioned by its acts in good faith, and in any event shall be liable only for its own willful negligence or default, and not for honest errors of judgment.
 
 **Jurisdiction:** This trust has been executed and delivered in the State of _________________ and shall be construed and administered according to the laws of that state.
 
