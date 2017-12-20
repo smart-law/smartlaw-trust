@@ -12,7 +12,7 @@ THIS IRREVOCABLE TRUST AGREEMENT is made this {date}, by and between {grantor} (
 
 **Digital signatures:** The security of updates to records through the smart contract is regulated through cryptographic digital signatures. All parties agree that their cryptographic signatures will have the full legal weight and significance of a physical signature. Public keys for each party are recorded in Schedule A.
 
-**Assignment of beneficial interest:** The beneficiary may use the Smart Contract to assign and transfer all rights, title, and beneficial interest under the trust, including the powers of direction and revocation, and the right to dissolve the trust and receive the trust property in conveyance. This assignment may not be done offline, but must be performed by calling the assignBeneficialInterest() function on the smart contract.
+**Assignment of beneficial interest:** A beneficiary may assign all rights associated with the beneficiary's interest under the trust. This assignment may not be done offline, but must be performed by calling the assignBeneficialInterest() function on the smart contract.
 
 **Verification of beneficiary:** The identity of the current beneficiary may be ascertained by performing a lookup on the public Ethereum blockchain using the getBeneficiary() function of the SmartLaw contract.
 
