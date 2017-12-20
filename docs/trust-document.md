@@ -26,7 +26,7 @@ THIS IRREVOCABLE TRUST AGREEMENT is made this {date}, by and between {grantor} (
 
 **Trustee compensation** The Trustee shall be entitled to receive compensation for its services. A fee schedule is included in Schedule B.
 
-**Trustee not liable:** The Trustee shall not be liable for any loss to the trust estate occasioned by its acts in good faith, and in any event shall be liable only for its own willful negligence or default, and not for honest errors of judgment or for interest on uninvested funds.
+**Trustee not liable:** The Trustee shall not be liable for any loss to the trust estate occasioned by its acts in good faith, and in any event shall be liable only for its own willful negligence or default, and not for honest errors of judgment.
 
 **Jurisdiction:** This trust has been executed and delivered in the State of _________________ and shall be construed and administered according to the laws of that state.
 
