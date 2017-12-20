@@ -24,7 +24,7 @@ THIS IRREVOCABLE TRUST AGREEMENT is made this {date}, by and between {grantor} (
 
 **Irrevocability** This trust is and shall be irrevocable and after the execution of this Trust Agreement the Grantor shall have no right, title, or interest in or power, privilege or incident of ownership in regard to any of said property and/or money and shall have no right to alter, amend, revoke or terminate this trust or any provision hereof.
 
-**Trustee compensation** The Trustee shall be entitled to receive reasonable compensation for its services. A standard fee schedule is included in Schedule B.
+**Trustee compensation** The Trustee shall be entitled to receive compensation for its services. A fee schedule is included in Schedule B.
 
 **Trustee not liable:** The Trustee shall not be liable for any loss to the trust estate occasioned by its acts in good faith, and in any event shall be liable only for its own willful negligence or default, and not for honest errors of judgment or for interest on uninvested funds.
 
