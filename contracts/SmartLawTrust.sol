@@ -4,10 +4,9 @@ contract SmartDeed {
   address public owner;
 
   struct LegalEntity {
-    string name;
-    bool verified;
-    address ownerAddress;
-    bool accreditedInvestor;
+    uint type; //0 = individual, 1=llc, 2=c corp, 3=s corp, 4=llp, 5=trust
+    address ownerAddress; //ethereum address of legal entity
+    bool accreditedInvestor; //0=no, 1=yes
     bool exist;
   }
   mapping (bytes32 => LegalEntity) LegalEntities;
@@ -26,32 +25,13 @@ contract SmartDeed {
 
   struct Trust {
     string name;
-    string legalDescription;
-    string status;
-    bool verified;
-    bytes32 trustor;
+    string trustProperty;
     bytes32[] beneficiaries;
-    bytes32 property;
     bool exist;
   }
   mapping (bytes32 => Trust) Trusts;
   bytes32[] public TrustList;
 
-  struct Loan {
-    bytes32 trust;
-    uint amount;
-    bool status;
-    bool exist;
-  }
-  mapping (bytes32 => Loan) public Loans;
-
-  struct Payment {
-    bytes32 loan;
-    uint amount;
-    uint conversion_rate;
-    bool exist;
-  }
-  mapping (bytes32 => Payment) public Payments;
 
   // Events
   event LegalEntityCreated(bytes32 _entity);
@@ -86,7 +66,7 @@ contract SmartDeed {
     return LegalEntityList.length;
   }
 
-  function newLegalEntity(string _name) public {
+  function newLegalEntity(string _name) public owner_only(msg.sender) {
     var _key = keccak256((LegalEntityList.length + 1));
     var entity = LegalEntities[_key];
     entity.name = _name;
@@ -159,10 +139,6 @@ contract SmartDeed {
     trust.property = _property;
   }
 
-  function setTrustTrustor(bytes32 _key, bytes32 _trustor) public owner_only(msg.sender) {
-    var trust = Trusts[_key];
-    trust.trustor = _trustor;
-  }
 
   /* function getTrustTrustor(bytes32 _key, string _trustor) public owner_only(msg.sender) {
     var trust = Trusts[_key];
@@ -173,6 +149,13 @@ contract SmartDeed {
     var trust = Trusts[_key];
     trust.trustor = _trustor;
   } */
+
+  function assignBeneficialInterest(bytes32 ){
+    /*
+    Legal Statement:
+    By calling this function, I am assigning all of my rights as beneficiary to the legal entity identified above.
+    */
+  }
 
   function dissolveTrust(){
     /*
