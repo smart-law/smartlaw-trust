@@ -8,7 +8,7 @@ THIS IRREVOCABLE TRUST AGREEMENT is made this {date}, by and between {grantor} (
 
 **Trust recorded on blockchain:** A record of the Trust has been registered on the Ethereum public blockchain (hereinafter "the blockchain") with a unique identifier (referenced in Schedule A.) The public Ethereum blockchain will serve as an official record-keeping and record-updating mechanism for the Trust. The Trustee may rely fully on these records in good faith.
 
-**Use of smart contract:** The ability to update records related to the Trust on the blockchain is regulated by a smart contract. A smart contract is a deterministic, immutable computer code system designed to facilitate, verify, record, and enforce certain protocols using distributed public records stored in the blockchain. For purposes of the Trust, the smart contract shalled be named the "Smartlaw Contract."
+**Use of smart contract:** The ability to update records related to the Trust on the blockchain is regulated by a smart contract. A smart contract is a deterministic, immutable computer code system designed to facilitate, verify, record, and enforce certain protocols using distributed public records stored in the blockchain. For purposes of the Trust, the smart contract shall be named the "Smartlaw Contract."
 
 **Digital signatures:** The security of updates to records through the smart contract is regulated through cryptographic digital signatures. All parties agree that their cryptographic signatures will have the full legal weight and significance of a physical signature. Public keys for each party are recorded in Schedule A.
 
