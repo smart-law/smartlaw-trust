@@ -40,9 +40,7 @@ contract SmartDeed {
     _;
   }
 
-  modifier trust_beneficiary(bytes32 _trust_hash, address _address) {
-    require(Trusts[_trust_hash].exist);
-
+  function is_beneficiary(bytes32 _trust_hash, address _address) private returns (bool) {
     var found = false;
     var beneficiaries = Trusts[_trust_hash].beneficiaries;
     for(var i = 0; i < beneficiaries.length; i++) {
@@ -51,7 +49,12 @@ contract SmartDeed {
         break;
       }
     }
-    require(found);
+    return found;
+  }
+
+  modifier trust_beneficiary(bytes32 _trust_hash, address _address) {
+    require(Trusts[_trust_hash].exist);
+    require(is_beneficiary(_trust_hash, _address));
     _;
   }
 
@@ -109,11 +112,11 @@ contract SmartDeed {
   }
 
 
-  function getTrustBeneficiaries(){
+  function isTrustBeneficiary(bytes32 _trust_hash, address _address) trust_not_deleted(_trust_hash) constant returns (bool) {
     //return list of beneficiaries
   }
 
-  function getTrust(bytes32 _trust_hash) public trust_exist(_trust_hash) trust_not_deleted(_key) constant returns (string, string) {
+  function getTrust(bytes32 _trust_hash) public trust_exist(_trust_hash) trust_not_deleted(_trust_hash) constant returns (string, string) {
     return (Trusts[_key].name, Trusts[_key].trustProperty);
   }
 
@@ -174,7 +177,7 @@ contract SmartDeed {
 
   function buyBeneficialInterest(){
     //this lets you buy beneficial interest that is currently offered for forSale
-    
+
   }
 
 
