@@ -28,13 +28,13 @@ contract('SmartDeed', accounts => {
 
 		describe('newLegalEntity()', () => {
 			it("should create new legal entity", () => {
-				return SmartDeedInstance.newLegalEntity("name")
+				return SmartDeedInstance.newLegalEntity(0)
 					.then(res => {
 						var entityKey = res.logs[0].args._entity;
 						return SmartDeedInstance.getLegalEntity.call(entityKey);
 					})
 					.then(res => {
-						assert.equal(res[0], "name", `${res[0]} is wrong name`);
+						assert.equal(res[0], 0, `${res[0]} is wrong category`);
 						return SmartDeedInstance.countLegalEntity();
 					})
 					.then(res => {
@@ -62,7 +62,7 @@ contract('SmartDeed', accounts => {
 			});
 			it("should verify legal entity", () => {
 				var entityKey = null;
-				return SmartDeedInstance.newLegalEntity("name 123")
+				return SmartDeedInstance.newLegalEntity(1)
 					.then(res => {
 						entityKey = res.logs[0].args._entity;
 						return SmartDeedInstance.verifyLegalEntity(entityKey)
@@ -85,41 +85,14 @@ contract('SmartDeed', accounts => {
 			});
 			it("should return legal entity data", () => {
 				var entityKey = null;
-				return SmartDeedInstance.newLegalEntity("test entity")
+				return SmartDeedInstance.newLegalEntity(2)
 					.then(res => {
 						entityKey = res.logs[0].args._entity;
 						return SmartDeedInstance.getLegalEntity.call(entityKey);
 					})
 					.then(res => {
-						assert.equal(res[0], "test entity", `${res[0]} is not the correct name`);
-					});
-			});
-		});
-
-	});
-
-	describe('Real Property', () => {
-
-		describe('newRealProperty()', () => {
-			it("should create new real property", () => {
-				return SmartDeedInstance.newRealProperty(
-					"My Property",
-					"House and Lot",
-					accounts[3]
-				)
-					.then(res => {
-						var propertyKey = res.logs[0].args._property;
-						return SmartDeedInstance.getRealProperty.call(propertyKey);
-					})
-					.then(res => {
-						assert.equal(res[0], "My Property", `${res[0]} is wrong legal description`);
-						assert.equal(res[1], "House and Lot", `${res[1]} is wrong description`);
-						assert.equal(res[2], accounts[3], `${res[2]} is wrong expense funds`);
-						assert.equal(res[3], accounts[0], `${res[3]} is wrong owner address`);
-						return SmartDeedInstance.countRealProperty();
-					})
-					.then(res => {
-						assert.equal(res.toNumber(), 1, `${res} is wrong count`);
+						assert.equal(res[0], 2, `${res[0]} is not the category`);
+						assert.equal(res[2], accounts[0], `${res[0]} is not the category`);
 					});
 			});
 		});
