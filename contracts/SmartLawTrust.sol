@@ -1,6 +1,6 @@
 pragma solidity ^0.4.15;
 
-contract SmartDeed {
+contract SmartLawTrust {
   address public owner;
 
   struct LegalEntity {
@@ -26,6 +26,7 @@ contract SmartDeed {
     mapping (bytes32 => Sale) saleOptions;
     bytes32[] saleList;
     bool exist;
+    uint safetyDelay; //safety delay to allow for freeze in event of security breach
     bool deleted;
     bool forSale;
     uint forSaleAmount;
@@ -37,7 +38,7 @@ contract SmartDeed {
   event LegalEntityCreated(address _entity);
   event TrustCreated(bytes32 _trust);
 
-  function SmartDeed() {
+  function SmartLawTrust() {
     owner = msg.sender;
   }
 
