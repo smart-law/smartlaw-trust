@@ -160,12 +160,6 @@ contract SmartDeed {
     }
     if(trueCount == beneficiaries.length)
       Trusts[_trust_hash].deleted = true;
-
-    /*
-    Legal Statement:
-    By calling this function, the beneficiary(ies) request that the trust be dissolved
-    and the trust property be deeded to the beneficiary(ies). All beneficiaries must approve to dissolve the trust.
-    */
   }
 
   function agreeSaleOffer(bytes32 _trust_hash, bytes32 _sale_hash) public trust_not_deleted(_trust_hash) trust_not_for_sale(_trust_hash) trust_beneficiary(_trust_hash, msg.sender) {
