@@ -22,9 +22,9 @@ contract SmartDeed {
     string name; //name of trust
     string trustProperty; //legal description of property
     address[] beneficiaries; //supports multiple beneficiaries
-    mapping (address => bool) dissolveSignatures;
     mapping (bytes32 => Sale) saleOptions;
     bytes32[] saleList;
+    address[] dissolve;
     bool exist;
     bool deleted;
     bool forSale;
@@ -37,7 +37,7 @@ contract SmartDeed {
   event LegalEntityCreated(address _entity);
   event TrustCreated(bytes32 _trust);
 
-  function SmartDeed() {
+  function SmartDeed() public {
     owner = msg.sender;
   }
 
@@ -69,6 +69,11 @@ contract SmartDeed {
     _;
   }
 
+  modifier entity_does_not_exist(address _address) {
+    require(LegalEntities[_address].exist==false);
+    _;
+  }
+
   modifier trust_exist(bytes32 _trust_hash) {
     require(Trusts[_trust_hash].exist);
     _;
@@ -93,10 +98,13 @@ contract SmartDeed {
     return LegalEntityList.length;
   }
 
-  function newLegalEntity(uint _category) {
+  function newLegalEntity(uint _category, bool _accreditedInvestor) public
+    entity_does_not_exist(msg.sender) {
+
     address _key = msg.sender;
     var entity = LegalEntities[_key];
     entity.category = _category;
+    entity.accreditedInvestor = _accreditedInvestor;
     entity.ownerAddress = msg.sender;
     entity.verified = false;
     entity.exist = true;
@@ -104,11 +112,17 @@ contract SmartDeed {
     LegalEntityCreated(_key);
   }
 
-  function verifyLegalEntity(address _address) public owner_only(msg.sender) entity_exist(_address) {
-    LegalEntities[_address].verified = true;
+  function verifyLegalEntity(address _address) public
+    owner_only(msg.sender)
+    entity_exist(_address) {
+
+      LegalEntities[_address].verified = true;
   }
 
-  function getLegalEntity(address _address) public entity_exist(_address) constant returns (uint, bool, address, bool ) {
+  function getLegalEntity(address _address) public
+    entity_exist(_address)
+    constant returns (uint, bool, address, bool ) {
+
     return (LegalEntities[_address].category, LegalEntities[_address].verified, LegalEntities[_address].ownerAddress, LegalEntities[_address].accreditedInvestor);
   }
 
@@ -116,7 +130,10 @@ contract SmartDeed {
     return TrustList.length;
   }
 
-  function newTrust(string _name, string _trustProperty) public owner_only(msg.sender) {
+  function newTrust(string _name, string _trustProperty, address _beneficiary) public
+    owner_only(msg.sender)
+    entity_exist(_beneficiary) {
+
     var _key = keccak256((TrustList.length + 1));
     var trust = Trusts[_key];
     trust.name = _name;
@@ -125,44 +142,95 @@ contract SmartDeed {
     trust.forSale = false;
     trust.forSaleAmount = 0;
     trust.exist = true;
+    trust.beneficiaries.push(_beneficiary);
     TrustList.push(_key);
     TrustCreated(_key);
   }
 
-  function isTrustBeneficiary(bytes32 _trust_hash, address _address) trust_not_deleted(_trust_hash) constant returns (bool) {
+  function isTrustBeneficiary(bytes32 _trust_hash, address _address) public
+    trust_not_deleted(_trust_hash)
+    constant returns (bool) {
+
     return is_beneficiary(_trust_hash, _address);
   }
 
-  function getTrust(bytes32 _trust_hash) public trust_exist(_trust_hash) trust_not_deleted(_trust_hash) constant returns (string, string, bool, uint) {
-    return (Trusts[_trust_hash].name, Trusts[_trust_hash].trustProperty, Trusts[_trust_hash].forSale, Trusts[_trust_hash].forSaleAmount);
+  function getTrust(bytes32 _trust_hash) public
+    trust_exist(_trust_hash)
+    trust_not_deleted(_trust_hash)
+    constant returns (string, string, bool, uint, bool) {
+
+    return (
+      Trusts[_trust_hash].name,
+      Trusts[_trust_hash].trustProperty,
+      Trusts[_trust_hash].forSale,
+      Trusts[_trust_hash].forSaleAmount,
+      Trusts[_trust_hash].deleted
+    );
   }
 
-  function assignBeneficialInterest(bytes32 _trust_hash, address _address) public owner_only(msg.sender) trust_exist(_trust_hash) entity_exist(_address) trust_not_deleted(_trust_hash) {
+  function getTrustBeneficiaries(bytes32 _trust_hash) public
+    trust_exist(_trust_hash)
+    trust_not_deleted(_trust_hash)
+    constant returns (address[]) {
+
+    return Trusts[_trust_hash].beneficiaries;
+  }
+
+  function getTrustDissolveSignatures(bytes32 _trust_hash) public
+    trust_exist(_trust_hash)
+    trust_not_deleted(_trust_hash)
+    constant returns (address[]) {
+
+    return Trusts[_trust_hash].dissolve;
+  }
+
+  function getTrustSaleOffers(bytes32 _trust_hash) public
+    trust_exist(_trust_hash)
+    trust_not_deleted(_trust_hash)
+    constant returns (bytes32[]) {
+
+    return Trusts[_trust_hash].saleList;
+  }
+
+  function assignBeneficialInterest(bytes32 _trust_hash, address _address) public
+    trust_beneficiary(_trust_hash, msg.sender)
+    trust_exist(_trust_hash)
+    entity_exist(_address)
+    trust_not_deleted(_trust_hash) {
     Trusts[_trust_hash].beneficiaries.push(_address);
-    Trusts[_trust_hash].dissolveSignatures[_address] = false;
     /*
     Legal Statement:
     By calling this function, I am assigning all of my rights as beneficiary to the legal entity identified above.
     */
   }
 
-  function dissolveTrust(bytes32 _trust_hash) public  trust_not_deleted(_trust_hash) trust_not_for_sale(_trust_hash) trust_beneficiary(_trust_hash, msg.sender) {
-    Trusts[_trust_hash].dissolveSignatures[msg.sender] = true;
+  function getTrustSaleOfferDetail(bytes32 _trust_hash, bytes32 _sale_hash) public
+  trust_exist(_trust_hash)
+  trust_not_deleted(_trust_hash)
+  constant returns(uint, address[]) {
 
-    var beneficiaries = Trusts[_trust_hash].beneficiaries;
+    return (
+      Trusts[_trust_hash].saleOptions[_sale_hash].amount,
+      Trusts[_trust_hash].saleOptions[_sale_hash].signatures
+    );
 
-    uint trueCount = 0;
+  }
 
-    for(uint i = 0; i < beneficiaries.length; i++) {
-      if(Trusts[_trust_hash].dissolveSignatures[beneficiaries[i]]==true) {
-        trueCount += 1;
-      }
-    }
-    if(trueCount == beneficiaries.length)
+  function dissolveTrust(bytes32 _trust_hash) public
+    trust_not_deleted(_trust_hash)
+    trust_not_for_sale(_trust_hash)
+    trust_beneficiary(_trust_hash, msg.sender) {
+
+    Trusts[_trust_hash].dissolve.push(msg.sender);
+    if(Trusts[_trust_hash].dissolve.length == Trusts[_trust_hash].beneficiaries.length)
       Trusts[_trust_hash].deleted = true;
   }
 
-  function agreeSaleOffer(bytes32 _trust_hash, bytes32 _sale_hash) public trust_not_deleted(_trust_hash) trust_not_for_sale(_trust_hash) trust_beneficiary(_trust_hash, msg.sender) {
+  function agreeSaleOffer(bytes32 _trust_hash, bytes32 _sale_hash) public
+    trust_not_deleted(_trust_hash)
+    trust_not_for_sale(_trust_hash)
+    trust_beneficiary(_trust_hash, msg.sender) {
+
     var signatures = Trusts[_trust_hash].saleOptions[_sale_hash].signatures;
     var beneficiaries = Trusts[_trust_hash].beneficiaries;
     bool done = false;
@@ -179,7 +247,10 @@ contract SmartDeed {
     }
   }
 
-  function offerBeneficialInterestForSale(bytes32 _trust_hash, uint _amount) public trust_not_deleted(_trust_hash) trust_not_for_sale(_trust_hash) trust_beneficiary(_trust_hash, msg.sender) {
+  function offerBeneficialInterestForSale(bytes32 _trust_hash, uint _amount) public
+    trust_not_deleted(_trust_hash)
+    trust_not_for_sale(_trust_hash)
+    trust_beneficiary(_trust_hash, msg.sender) {
 
     var _key = keccak256((Trusts[_trust_hash].saleList.length + 1));
 
@@ -192,14 +263,17 @@ contract SmartDeed {
     */
   }
 
-  function buyBeneficialInterest(bytes32 _trust_hash) public payable trust_not_deleted(_trust_hash) trust_for_sale(_trust_hash) {
+  function buyBeneficialInterest(bytes32 _trust_hash) public payable
+    trust_not_deleted(_trust_hash)
+    trust_for_sale(_trust_hash) {
     //this lets you buy beneficial interest that is currently offered for forSale
+
     require(msg.value >= Trusts[_trust_hash].forSaleAmount);
 
-    uint length = Trusts[_trust_hash].beneficiaries.length;
+    uint length = Trusts[_trust_hash].dissolve.length;
     uint i;
     for(i = 0; i < length; i++) {
-      delete Trusts[_trust_hash].dissolveSignatures[Trusts[_trust_hash].beneficiaries[i]];
+      delete Trusts[_trust_hash].dissolve[i];
     }
 
     length = Trusts[_trust_hash].saleList.length;

@@ -3,32 +3,34 @@ var SmartDeed = artifacts.require("./SmartDeed.sol");
 var chai = require('chai');
 var moment = require('moment');
 var expect = chai.expect;
-var web
 
 contract('SmartDeed', accounts => {
 
 	let SmartDeedInstance;
+	let EntityKeyTest;
 
 	before(() => {
-		return SmartDeed.deployed().then(instance => {
-			SmartDeedInstance = instance;
-		});
-	});
-
-	it("should create new SmartDeed contract", () => {
-		return SmartDeed.deployed().then(instance => {
-				return instance.owner.call();
+		return SmartDeed.deployed()
+			.then(instance => {
+				SmartDeedInstance = instance;
+				return SmartDeedInstance.newLegalEntity(0, false)
 			})
-			.then(owner => {
-				assert.equal(owner, accounts[0], `${accounts[0]} is not the owner`);
+			.then(res => {
+				EntityKeyTest = res.logs[0].args._entity;
 			});
 	});
 
 	describe('Legal Entity', () => {
 
 		describe('newLegalEntity()', () => {
+			it("should return error when sender is already an entity", () => {
+				return SmartDeedInstance.newLegalEntity(0, false)
+					.catch(err => {
+						assert.isNotNull(err);
+					});
+			});
 			it("should create new legal entity", () => {
-				return SmartDeedInstance.newLegalEntity(0)
+				return SmartDeedInstance.newLegalEntity(0, false, {from: accounts[1]})
 					.then(res => {
 						var entityKey = res.logs[0].args._entity;
 						return SmartDeedInstance.getLegalEntity.call(entityKey);
@@ -38,7 +40,7 @@ contract('SmartDeed', accounts => {
 						return SmartDeedInstance.countLegalEntity();
 					})
 					.then(res => {
-						assert.equal(res.toNumber(), 1, `${res} is wrong count`);
+						assert.equal(res.toNumber(), 2, `${res} is wrong count`);
 					});
 			});
 		});
@@ -61,14 +63,9 @@ contract('SmartDeed', accounts => {
 					});
 			});
 			it("should verify legal entity", () => {
-				var entityKey = null;
-				return SmartDeedInstance.newLegalEntity(1)
+				return SmartDeedInstance.verifyLegalEntity(EntityKeyTest)
 					.then(res => {
-						entityKey = res.logs[0].args._entity;
-						return SmartDeedInstance.verifyLegalEntity(entityKey)
-					})
-					.then(res => {
-						return SmartDeedInstance.getLegalEntity.call(entityKey);
+						return SmartDeedInstance.getLegalEntity.call(EntityKeyTest);
 					})
 					.then(res => {
 						assert.equal(res[1], true, `${res[1]} is not the verified value`);
@@ -84,17 +81,21 @@ contract('SmartDeed', accounts => {
 					});
 			});
 			it("should return legal entity data", () => {
-				var entityKey = null;
-				return SmartDeedInstance.newLegalEntity(2)
+				return SmartDeedInstance.getLegalEntity.call(EntityKeyTest)
 					.then(res => {
-						entityKey = res.logs[0].args._entity;
-						return SmartDeedInstance.getLegalEntity.call(entityKey);
-					})
-					.then(res => {
-						assert.equal(res[0], 2, `${res[0]} is not the category`);
-						assert.equal(res[2], accounts[0], `${res[0]} is not the category`);
+						assert.equal(res[0].toNumber(), 0, `${res[0]} is not the category`);
+						assert.equal(res[2], accounts[0], `${res[0]} is not the owner`);
 					});
 			});
+		});
+
+		describe('countLegalEntity()', () => {
+			it("should return correct number of entity", () => {
+				return SmartDeedInstance.countLegalEntity.call()
+					.then(res => {
+						assert.equal(res.toNumber(), 2, `${res.toNumber()} is not the correct count`);
+					})
+			})
 		});
 
 	});
