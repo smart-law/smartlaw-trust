@@ -1,6 +1,6 @@
 pragma solidity ^0.4.15;
 
-contract SmartDeed {
+contract SmartLawTrust {
   address public owner;
 
   struct LegalEntity {
@@ -26,6 +26,7 @@ contract SmartDeed {
     bytes32[] saleList;
     address[] dissolve;
     bool exist;
+    uint safetyDelay; //safety delay to allow for freeze in event of security breach
     bool deleted;
     bool forSale;
     uint forSaleAmount;

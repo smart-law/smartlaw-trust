@@ -1,10 +1,12 @@
-pragma solidity ^0.4.0;
+pragma solidity ^0.4.15;
 
-contract SmartLoan {
-  function newLoanOffer() {
-    //to do
-  }
-  function payment() payable {
-    //to do
-  }
+contract STABL {
+  address public owner;
+
+function STABL(){
+  owner = msg.sender;
+}
+
+
+
 }
