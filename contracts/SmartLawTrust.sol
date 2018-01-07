@@ -38,7 +38,7 @@ contract SmartLawTrust {
   event LegalEntityCreated(address _entity);
   event TrustCreated(bytes32 _trust);
 
-  function SmartDeed() public {
+  function SmartLawTrust() public {
     owner = msg.sender;
   }
 
@@ -271,25 +271,28 @@ contract SmartLawTrust {
 
     require(msg.value >= Trusts[_trust_hash].forSaleAmount);
 
-    uint length = Trusts[_trust_hash].dissolve.length;
     uint i;
-    for(i = 0; i < length; i++) {
-      delete Trusts[_trust_hash].dissolve[i];
+    uint refund = msg.value - Trusts[_trust_hash].forSaleAmount;
+    if(refund > 0)
+      msg.sender.transfer(refund);
+
+    uint beneficiaryAmount = Trusts[_trust_hash].forSaleAmount / Trusts[_trust_hash].beneficiaries.length;
+    for(i = 0; i < Trusts[_trust_hash].beneficiaries.length; i++) {
+      Trusts[_trust_hash].beneficiaries[i].transfer(beneficiaryAmount);
     }
 
-    length = Trusts[_trust_hash].saleList.length;
+    bytes32[] memory emptyBytes32Array;
+    address[] memory emptyAddressArray;
+
+    Trusts[_trust_hash].dissolve = emptyAddressArray;
+
+    uint length = Trusts[_trust_hash].saleList.length;
     for(i = 0; i < length; i++) {
       delete Trusts[_trust_hash].saleOptions[Trusts[_trust_hash].saleList[i]];
     }
 
-    length = Trusts[_trust_hash].saleList.length;
-    for(i = 0; i < length; i++) {
-      delete Trusts[_trust_hash].saleList[i];
-    }
-    length = Trusts[_trust_hash].beneficiaries.length;
-    for(i = 0; i < length; i++) {
-      delete Trusts[_trust_hash].beneficiaries[i];
-    }
+    Trusts[_trust_hash].saleList = emptyBytes32Array;
+    Trusts[_trust_hash].beneficiaries = emptyAddressArray;
     Trusts[_trust_hash].beneficiaries.push(msg.sender);
 
     Trusts[_trust_hash].forSale = false;
