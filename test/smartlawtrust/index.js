@@ -1,22 +1,22 @@
-var SmartDeed = artifacts.require("./SmartDeed.sol");
+var SmartLawTrust = artifacts.require("./SmartLawTrust.sol");
 
 var chai = require('chai');
 var moment = require('moment');
 var expect = chai.expect;
 
-contract('SmartDeed', accounts => {
+contract('SmartLawTrust', accounts => {
 
-	let SmartDeedInstance;
+	let SmartLawTrustInstance;
 
 	before(() => {
-		return SmartDeed.deployed()
+		return SmartLawTrust.deployed()
 			.then(instance => {
-				SmartDeedInstance = instance;
+				SmartLawTrustInstance = instance;
 			});
 	});
 
-	it("should create new SmartDeed contract", () => {
-		return SmartDeed.deployed().then(instance => {
+	it("should create new SmartLawTrust contract", () => {
+		return SmartLawTrust.deployed().then(instance => {
 				return instance.owner.call();
 			})
 			.then(owner => {

@@ -1,19 +1,19 @@
-var SmartDeed = artifacts.require("./SmartDeed.sol");
+var SmartLawTrust = artifacts.require("./SmartLawTrust.sol");
 
 var chai = require('chai');
 var moment = require('moment');
 var expect = chai.expect;
 
-contract('SmartDeed', accounts => {
+contract('SmartLawTrust', accounts => {
 
-	let SmartDeedInstance;
+	let SmartLawTrustInstance;
 	let EntityKeyTest;
 
 	before(() => {
-		return SmartDeed.deployed()
+		return SmartLawTrust.deployed()
 			.then(instance => {
-				SmartDeedInstance = instance;
-				return SmartDeedInstance.newLegalEntity(0, false)
+				SmartLawTrustInstance = instance;
+				return SmartLawTrustInstance.newLegalEntity(0, false)
 			})
 			.then(res => {
 				EntityKeyTest = res.logs[0].args._entity;
@@ -24,20 +24,20 @@ contract('SmartDeed', accounts => {
 
 		describe('newLegalEntity()', () => {
 			it("should return error when sender is already an entity", () => {
-				return SmartDeedInstance.newLegalEntity(0, false)
+				return SmartLawTrustInstance.newLegalEntity(0, false)
 					.catch(err => {
 						assert.isNotNull(err);
 					});
 			});
 			it("should create new legal entity", () => {
-				return SmartDeedInstance.newLegalEntity(0, false, {from: accounts[1]})
+				return SmartLawTrustInstance.newLegalEntity(0, false, {from: accounts[1]})
 					.then(res => {
 						var entityKey = res.logs[0].args._entity;
-						return SmartDeedInstance.getLegalEntity.call(entityKey);
+						return SmartLawTrustInstance.getLegalEntity.call(entityKey);
 					})
 					.then(res => {
 						assert.equal(res[0], 0, `${res[0]} is wrong category`);
-						return SmartDeedInstance.countLegalEntity();
+						return SmartLawTrustInstance.countLegalEntity();
 					})
 					.then(res => {
 						assert.equal(res.toNumber(), 2, `${res} is wrong count`);
@@ -47,7 +47,7 @@ contract('SmartDeed', accounts => {
 
 		describe('verifyLegalEntity()', () => {
 			it("should return error when not owner", () => {
-				return SmartDeedInstance.verifyLegalEntity(
+				return SmartLawTrustInstance.verifyLegalEntity(
 						"key", {
 							from: accounts[1]
 						}
@@ -57,15 +57,15 @@ contract('SmartDeed', accounts => {
 					});
 			});
 			it("should return error when key does not exist", () => {
-				return SmartDeedInstance.verifyLegalEntity('key')
+				return SmartLawTrustInstance.verifyLegalEntity('key')
 					.catch(err => {
 						assert.isNotNull(err);
 					});
 			});
 			it("should verify legal entity", () => {
-				return SmartDeedInstance.verifyLegalEntity(EntityKeyTest)
+				return SmartLawTrustInstance.verifyLegalEntity(EntityKeyTest)
 					.then(res => {
-						return SmartDeedInstance.getLegalEntity.call(EntityKeyTest);
+						return SmartLawTrustInstance.getLegalEntity.call(EntityKeyTest);
 					})
 					.then(res => {
 						assert.equal(res[1], true, `${res[1]} is not the verified value`);
@@ -75,13 +75,13 @@ contract('SmartDeed', accounts => {
 
 		describe('getLegalEntity()', () => {
 			it("should return error when key does not exist", () => {
-				return SmartDeedInstance.getLegalEntity.call('key')
+				return SmartLawTrustInstance.getLegalEntity.call('key')
 					.catch(err => {
 						assert.isNotNull(err);
 					});
 			});
 			it("should return legal entity data", () => {
-				return SmartDeedInstance.getLegalEntity.call(EntityKeyTest)
+				return SmartLawTrustInstance.getLegalEntity.call(EntityKeyTest)
 					.then(res => {
 						assert.equal(res[0].toNumber(), 0, `${res[0]} is not the category`);
 						assert.equal(res[2], accounts[0], `${res[0]} is not the owner`);
@@ -91,7 +91,7 @@ contract('SmartDeed', accounts => {
 
 		describe('countLegalEntity()', () => {
 			it("should return correct number of entity", () => {
-				return SmartDeedInstance.countLegalEntity.call()
+				return SmartLawTrustInstance.countLegalEntity.call()
 					.then(res => {
 						assert.equal(res.toNumber(), 2, `${res.toNumber()} is not the correct count`);
 					})

@@ -1,7 +1,7 @@
 var Migrations = artifacts.require("./Migrations.sol");
-var SmartDeed = artifacts.require("./SmartDeed.sol");
+var SmartLawTrust = artifacts.require("./SmartLawTrust.sol");
 
 module.exports = function(deployer) {
   deployer.deploy(Migrations);
-  deployer.deploy(SmartDeed);
+  deployer.deploy(SmartLawTrust);
 };
