@@ -74,6 +74,12 @@ contract SmartLawTrust {
         }
     }
 
+    function check_add_beneficiary(bytes32 _trust_hash, bytes32 _beneficiary_hash) private {
+        if (Trusts[_trust_hash].beneficiaries.length == Trusts[_trust_hash].pendingBeneficiary[_beneficiary_hash].signatures.length) {
+            Trusts[_trust_hash].beneficiaries.push(Trusts[_trust_hash].pendingBeneficiary[_beneficiary_hash].entity);
+        }
+    }
+
     modifier trust_beneficiary(bytes32 _trust_hash, address _address) {
         require(Trusts[_trust_hash].exist);
         require(is_beneficiary(_trust_hash, _address));
@@ -218,18 +224,39 @@ contract SmartLawTrust {
         return Trusts[_trust_hash].saleList;
     }
 
-    function assignBeneficialInterest(bytes32 _trust_hash, address _address)
+    function addBeneficialInterest(bytes32 _trust_hash, address _address)
         public
         trust_beneficiary(_trust_hash, msg.sender)
         trust_exist(_trust_hash)
         entity_exist(_address)
         trust_not_deleted(_trust_hash)
     {
-        Trusts[_trust_hash].beneficiaries.push(_address);
+
+        var _key = keccak256((Trusts[_trust_hash].pendingBeneficiaryList.length + 1));
+
+        Trusts[_trust_hash].pendingBeneficiary[_key].entity = _address;
+        Trusts[_trust_hash].pendingBeneficiary[_key].signatures.push(msg.sender);
+        Trusts[_trust_hash].pendingBeneficiaryList.push(_key);
+        check_add_beneficiary(_trust_hash, _key);
         /*
         Legal Statement:
         By calling this function, I am assigning all of my rights as beneficiary to the legal entity identified above.
         */
+    }
+
+    function agreeToAddBeneficiary(bytes32 _trust_hash, bytes32 _beneficiary_hash)
+        public
+        trust_not_deleted(_trust_hash)
+        trust_not_for_sale(_trust_hash)
+        trust_beneficiary(_trust_hash, msg.sender)
+    {
+        bool done = is_found(Trusts[_trust_hash].pendingBeneficiary[_beneficiary_hash].signatures, msg.sender);
+        if(done) {
+            revert();
+        } else {
+            Trusts[_trust_hash].pendingBeneficiary[_beneficiary_hash].signatures.push(msg.sender);
+            check_add_beneficiary(_trust_hash, _beneficiary_hash);
+        }
     }
 
     function getTrustSaleOfferDetail(bytes32 _trust_hash, bytes32 _sale_hash)
@@ -272,6 +299,7 @@ contract SmartLawTrust {
       bytes32[] memory emptyBytes32Array;
 
       uint length = Trusts[_trust_hash].saleList.length;
+      uint i;
       for (i = 0; i < length; i++) {
           delete Trusts[_trust_hash].saleOptions[Trusts[_trust_hash].saleList[i]];
       }

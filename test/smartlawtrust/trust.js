@@ -77,31 +77,31 @@ contract('SmartLawTrust', accounts => {
 			});
 		});
 
-		describe('assignBeneficialInterest()', () => {
+		describe('addBeneficialInterest()', () => {
 			it("should return error when key does not exist", () => {
-				return SmartLawTrustInstance.assignBeneficialInterest.call('key', accounts[0])
+				return SmartLawTrustInstance.addBeneficialInterest.call('key', accounts[0])
 					.catch(err => {
 						assert.isNotNull(err);
 					});
 			});
 			it("should return error when entity does not exist", () => {
-				return SmartLawTrustInstance.assignBeneficialInterest(TrustKeyTest, 'key')
+				return SmartLawTrustInstance.addBeneficialInterest(TrustKeyTest, 'key')
 					.catch(err => {
 						assert.isNotNull(err);
 					});
 			});
 			it("should return error when sender is not beneficiary", () => {
-				return SmartLawTrustInstance.assignBeneficialInterest(TrustKeyTest, 'key')
+				return SmartLawTrustInstance.addBeneficialInterest(TrustKeyTest, 'key')
 					.catch(err => {
 						assert.isNotNull(err);
 					});
 			});
 			it("should assign address as beneficiary", () => {
-				return SmartLawTrustInstance.assignBeneficialInterest(TrustKeyTest, accounts[7], {
+				return SmartLawTrustInstance.addBeneficialInterest(TrustKeyTest, accounts[7], {
 						from: TrustOwner
 					})
 					.then(res => {
-						return SmartLawTrustInstance.assignBeneficialInterest(TrustKeyTest, accounts[6], {
+						return SmartLawTrustInstance.addBeneficialInterest(TrustKeyTest, accounts[6], {
 							from: TrustOwner
 						})
 					})
@@ -113,7 +113,7 @@ contract('SmartLawTrust', accounts => {
 						return SmartLawTrustInstance.isTrustBeneficiary.call(TrustKeyTest, accounts[6]);
 					})
 					.then(res => {
-						assert.isTrue(res);
+						assert.isFalse(res);
 					})
 			});
 
