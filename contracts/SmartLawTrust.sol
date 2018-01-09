@@ -48,15 +48,14 @@ contract SmartLawTrust {
     }
 
     function is_beneficiary(bytes32 _trust_hash, address _address) private returns (bool) {
-        bool found = false;
         var beneficiaries = Trusts[_trust_hash].beneficiaries;
         for (uint i = 0; i < beneficiaries.length; i++) {
             if (beneficiaries[i] == _address) {
-                found = true;
-                break;
+                return true;
             }
         }
-        return found;
+        
+        return false;
     }
 
     modifier trust_beneficiary(bytes32 _trust_hash, address _address) {
