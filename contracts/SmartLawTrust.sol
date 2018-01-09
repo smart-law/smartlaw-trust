@@ -3,8 +3,10 @@ pragma solidity ^0.4.15;
 contract SmartLawTrust {
     address public owner;
 
+    enum LegalEntityCategory { Individual, LLC, CCorp, SCorp, LLP, Trust }
+    
     struct LegalEntity {
-        uint category; //0 = individual, 1=llc, 2=c corp, 3=s corp, 4=llp, 5=trust
+        LegalEntityCategory category; //0 = individual, 1=llc, 2=c corp, 3=s corp, 4=llp, 5=trust
         address ownerAddress; //ethereum address of legal entity
         bool accreditedInvestor; //0=no, 1=yes
         bool verified;
@@ -98,7 +100,7 @@ contract SmartLawTrust {
         return LegalEntityList.length;
     }
 
-    function newLegalEntity(uint _category, bool _accreditedInvestor)
+    function newLegalEntity(LegalEntityCategory _category, bool _accreditedInvestor)
         public
         entity_does_not_exist(msg.sender)
     {
@@ -125,7 +127,7 @@ contract SmartLawTrust {
     function getLegalEntity(address _address)
         public
         entity_exist(_address)
-        constant returns (uint, bool, address, bool )
+        constant returns (LegalEntityCategory, bool, address, bool )
     {
         return (LegalEntities[_address].category, LegalEntities[_address].verified, LegalEntities[_address].ownerAddress, LegalEntities[_address].accreditedInvestor);
     }
