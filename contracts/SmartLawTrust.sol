@@ -238,15 +238,17 @@ contract SmartLawTrust {
         var signatures = Trusts[_trust_hash].dissolve;
 
         for(uint i = 0; i < signatures.length; i++) {
-            if(signatures[i]==msg.sender)
+            if(signatures[i]==msg.sender) {
                 revert(); // Already agreed to dissolve
+            }
         }
 
         var beneficiaries = Trusts[_trust_hash].beneficiaries;
 
         Trusts[_trust_hash].dissolve.push(msg.sender);
-        if(Trusts[_trust_hash].dissolve.length == beneficiaries.length)
+        if(Trusts[_trust_hash].dissolve.length == beneficiaries.length) {
             Trusts[_trust_hash].deleted = true;
+        }
     }
 
     function agreeSaleOffer(bytes32 _trust_hash, bytes32 _sale_hash)
@@ -301,8 +303,9 @@ contract SmartLawTrust {
 
         uint i;
         uint refund = msg.value - Trusts[_trust_hash].forSaleAmount;
-        if(refund > 0)
+        if(refund > 0) {
             msg.sender.transfer(refund);
+        }
 
         uint beneficiaryAmount = Trusts[_trust_hash].forSaleAmount / Trusts[_trust_hash].beneficiaries.length;
         for(i = 0; i < Trusts[_trust_hash].beneficiaries.length; i++) {
