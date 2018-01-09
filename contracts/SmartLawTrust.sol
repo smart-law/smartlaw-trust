@@ -223,17 +223,17 @@ contract SmartLawTrust {
     trust_beneficiary(_trust_hash, msg.sender) {
 
     var signatures = Trusts[_trust_hash].dissolve;
-    var beneficiaries = Trusts[_trust_hash].beneficiaries;
-    bool done = false;
+    
     for(uint i = 0; i < signatures.length; i++) {
       if(signatures[i]==msg.sender)
-        done = true;
+        revert(); // Already agreed to dissolve
     }
-    if(!done) {
-      Trusts[_trust_hash].dissolve.push(msg.sender);
-      if(Trusts[_trust_hash].dissolve.length == beneficiaries.length)
-        Trusts[_trust_hash].deleted = true;
-    }
+    
+    var beneficiaries = Trusts[_trust_hash].beneficiaries;
+    
+    Trusts[_trust_hash].dissolve.push(msg.sender);
+    if(Trusts[_trust_hash].dissolve.length == beneficiaries.length)
+      Trusts[_trust_hash].deleted = true;
   }
 
   function agreeSaleOffer(bytes32 _trust_hash, bytes32 _sale_hash) public
@@ -242,18 +242,18 @@ contract SmartLawTrust {
     trust_beneficiary(_trust_hash, msg.sender) {
 
     var signatures = Trusts[_trust_hash].saleOptions[_sale_hash].signatures;
-    var beneficiaries = Trusts[_trust_hash].beneficiaries;
-    bool done = false;
+    
     for(uint i = 0; i < signatures.length; i++) {
       if(signatures[i]==msg.sender)
-        done = true;
+        revert(); // Already agreed to sale offer
     }
-    if(!done) {
-      Trusts[_trust_hash].saleOptions[_sale_hash].signatures.push(msg.sender);
-      if(beneficiaries.length == Trusts[_trust_hash].saleOptions[_sale_hash].signatures.length) {
-        Trusts[_trust_hash].forSale = true;
-        Trusts[_trust_hash].forSaleAmount = Trusts[_trust_hash].saleOptions[_sale_hash].amount;
-      }
+    
+    var beneficiaries = Trusts[_trust_hash].beneficiaries;
+    
+    Trusts[_trust_hash].saleOptions[_sale_hash].signatures.push(msg.sender);
+    if(beneficiaries.length == Trusts[_trust_hash].saleOptions[_sale_hash].signatures.length) {
+      Trusts[_trust_hash].forSale = true;
+      Trusts[_trust_hash].forSaleAmount = Trusts[_trust_hash].saleOptions[_sale_hash].amount;
     }
   }
 
