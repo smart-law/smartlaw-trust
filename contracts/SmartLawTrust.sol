@@ -222,9 +222,18 @@ contract SmartLawTrust {
     trust_not_for_sale(_trust_hash)
     trust_beneficiary(_trust_hash, msg.sender) {
 
-    Trusts[_trust_hash].dissolve.push(msg.sender);
-    if(Trusts[_trust_hash].dissolve.length == Trusts[_trust_hash].beneficiaries.length)
-      Trusts[_trust_hash].deleted = true;
+    var signatures = Trusts[_trust_hash].dissolve;
+    var beneficiaries = Trusts[_trust_hash].beneficiaries;
+    bool done = false;
+    for(uint i = 0; i < signatures.length; i++) {
+      if(signatures[i]==msg.sender)
+        done = true;
+    }
+    if(done == false) {
+      Trusts[_trust_hash].dissolve.push(msg.sender);
+      if(Trusts[_trust_hash].dissolve.length == beneficiaries.length)
+        Trusts[_trust_hash].deleted = true;
+    }
   }
 
   function agreeSaleOffer(bytes32 _trust_hash, bytes32 _sale_hash) public
