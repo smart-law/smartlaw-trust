@@ -50,8 +50,8 @@ contract SmartLawTrust {
     function is_beneficiary(bytes32 _trust_hash, address _address) private returns (bool) {
         bool found = false;
         var beneficiaries = Trusts[_trust_hash].beneficiaries;
-        for(uint i = 0; i < beneficiaries.length; i++) {
-            if(beneficiaries[i]==_address) {
+        for (uint i = 0; i < beneficiaries.length; i++) {
+            if (beneficiaries[i] == _address) {
                 found = true;
                 break;
             }
@@ -237,8 +237,8 @@ contract SmartLawTrust {
     {
         var signatures = Trusts[_trust_hash].dissolve;
 
-        for(uint i = 0; i < signatures.length; i++) {
-            if(signatures[i]==msg.sender) {
+        for (uint i = 0; i < signatures.length; i++) {
+            if (signatures[i]==msg.sender) {
                 revert(); // Already agreed to dissolve
             }
         }
@@ -246,7 +246,7 @@ contract SmartLawTrust {
         var beneficiaries = Trusts[_trust_hash].beneficiaries;
 
         Trusts[_trust_hash].dissolve.push(msg.sender);
-        if(Trusts[_trust_hash].dissolve.length == beneficiaries.length) {
+        if (Trusts[_trust_hash].dissolve.length == beneficiaries.length) {
             Trusts[_trust_hash].deleted = true;
         }
     }
@@ -259,8 +259,8 @@ contract SmartLawTrust {
     {
         var signatures = Trusts[_trust_hash].saleOptions[_sale_hash].signatures;
 
-        for(uint i = 0; i < signatures.length; i++) {
-            if(signatures[i]==msg.sender) {
+        for (uint i = 0; i < signatures.length; i++) {
+            if (signatures[i]==msg.sender) {
                 revert(); // Already agreed to sale offer
             }
         }
@@ -268,7 +268,7 @@ contract SmartLawTrust {
         var beneficiaries = Trusts[_trust_hash].beneficiaries;
 
         Trusts[_trust_hash].saleOptions[_sale_hash].signatures.push(msg.sender);
-        if(beneficiaries.length == Trusts[_trust_hash].saleOptions[_sale_hash].signatures.length) {
+        if (beneficiaries.length == Trusts[_trust_hash].saleOptions[_sale_hash].signatures.length) {
             Trusts[_trust_hash].forSale = true;
             Trusts[_trust_hash].forSaleAmount = Trusts[_trust_hash].saleOptions[_sale_hash].amount;
         }
@@ -303,12 +303,12 @@ contract SmartLawTrust {
 
         uint i;
         uint refund = msg.value - Trusts[_trust_hash].forSaleAmount;
-        if(refund > 0) {
+        if (refund > 0) {
             msg.sender.transfer(refund);
         }
 
         uint beneficiaryAmount = Trusts[_trust_hash].forSaleAmount / Trusts[_trust_hash].beneficiaries.length;
-        for(i = 0; i < Trusts[_trust_hash].beneficiaries.length; i++) {
+        for (i = 0; i < Trusts[_trust_hash].beneficiaries.length; i++) {
             Trusts[_trust_hash].beneficiaries[i].transfer(beneficiaryAmount);
         }
 
@@ -318,7 +318,7 @@ contract SmartLawTrust {
         Trusts[_trust_hash].dissolve = emptyAddressArray;
 
         uint length = Trusts[_trust_hash].saleList.length;
-        for(i = 0; i < length; i++) {
+        for (i = 0; i < length; i++) {
             delete Trusts[_trust_hash].saleOptions[Trusts[_trust_hash].saleList[i]];
         }
 
