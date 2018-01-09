@@ -71,7 +71,7 @@ contract SmartLawTrust {
   }
 
   modifier entity_does_not_exist(address _address) {
-    require(LegalEntities[_address].exist==false);
+    require(!LegalEntities[_address].exist);
     _;
   }
 
@@ -81,12 +81,12 @@ contract SmartLawTrust {
   }
 
   modifier trust_not_deleted(bytes32 _trust_hash) {
-    require(Trusts[_trust_hash].deleted == false);
+    require(!Trusts[_trust_hash].deleted);
     _;
   }
 
   modifier trust_not_for_sale(bytes32 _trust_hash) {
-    require(Trusts[_trust_hash].forSale == false);
+    require(!Trusts[_trust_hash].forSale);
     _;
   }
 
@@ -229,7 +229,7 @@ contract SmartLawTrust {
       if(signatures[i]==msg.sender)
         done = true;
     }
-    if(done == false) {
+    if(!done) {
       Trusts[_trust_hash].dissolve.push(msg.sender);
       if(Trusts[_trust_hash].dissolve.length == beneficiaries.length)
         Trusts[_trust_hash].deleted = true;
@@ -248,7 +248,7 @@ contract SmartLawTrust {
       if(signatures[i]==msg.sender)
         done = true;
     }
-    if(done == false) {
+    if(!done) {
       Trusts[_trust_hash].saleOptions[_sale_hash].signatures.push(msg.sender);
       if(beneficiaries.length == Trusts[_trust_hash].saleOptions[_sale_hash].signatures.length) {
         Trusts[_trust_hash].forSale = true;
