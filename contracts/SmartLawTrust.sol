@@ -2,6 +2,7 @@ pragma solidity ^0.4.15;
 
 contract SmartLawTrust {
     address public owner;
+    mapping (address => uint256) funds;
 
     struct LegalEntity {
         uint category; //0 = individual, 1=llc, 2=c corp, 3=s corp, 4=llp, 5=trust
@@ -10,6 +11,7 @@ contract SmartLawTrust {
         bool verified;
         bool exist;
     }
+
     mapping (address => LegalEntity) LegalEntities;
     address[] public LegalEntityList;
 
@@ -133,6 +135,7 @@ contract SmartLawTrust {
         entity.verified = false;
         entity.exist = true;
         LegalEntityList.push(_key);
+        funds[msg.sender] = 0;
         LegalEntityCreated(_key);
     }
 
@@ -224,6 +227,15 @@ contract SmartLawTrust {
         return Trusts[_trust_hash].saleList;
     }
 
+    function getTrustPendingBeneficiaries(bytes32 _trust_hash)
+        public
+        trust_exist(_trust_hash)
+        trust_not_deleted(_trust_hash)
+        constant returns (bytes32[])
+    {
+        return Trusts[_trust_hash].pendingBeneficiaryList;
+    }
+
     function addBeneficialInterest(bytes32 _trust_hash, address _address)
         public
         trust_beneficiary(_trust_hash, msg.sender)
@@ -271,6 +283,18 @@ contract SmartLawTrust {
         );
     }
 
+    function getTrustPendingBeneficiaryDetail(bytes32 _trust_hash, bytes32 _beneficiary_hash)
+        public
+        trust_exist(_trust_hash)
+        trust_not_deleted(_trust_hash)
+        constant returns(uint, address[])
+    {
+        return (
+            Trusts[_trust_hash].pendingBeneficiary[_beneficiary_hash].entity,
+            Trusts[_trust_hash].pendingBeneficiary[_beneficiary_hash].signatures
+        );
+    }
+
     function dissolveTrust(bytes32 _trust_hash)
         public
         trust_not_deleted(_trust_hash)
@@ -296,17 +320,17 @@ contract SmartLawTrust {
         trust_for_sale(_trust_hash)
     {
 
-      bytes32[] memory emptyBytes32Array;
+        bytes32[] memory emptyBytes32Array;
 
-      uint length = Trusts[_trust_hash].saleList.length;
-      uint i;
-      for (i = 0; i < length; i++) {
-          delete Trusts[_trust_hash].saleOptions[Trusts[_trust_hash].saleList[i]];
-      }
+        uint length = Trusts[_trust_hash].saleList.length;
+        uint i;
+        for (i = 0; i < length; i++) {
+            delete Trusts[_trust_hash].saleOptions[Trusts[_trust_hash].saleList[i]];
+        }
 
-      Trusts[_trust_hash].saleList = emptyBytes32Array;
-      Trusts[_trust_hash].forSale = false;
-      Trusts[_trust_hash].forSaleAmount = 0;
+        Trusts[_trust_hash].saleList = emptyBytes32Array;
+        Trusts[_trust_hash].forSale = false;
+        Trusts[_trust_hash].forSaleAmount = 0;
 
     }
 
@@ -343,6 +367,21 @@ contract SmartLawTrust {
         */
     }
 
+    function withdraw()
+        public
+        entity_exist(msg.sender)
+    {
+        msg.sender.transfer(funds[msg.sender]);
+    }
+
+    function balance()
+        public
+        entity_exist(msg.sender)
+        constant returns(uint256)
+    {
+        return funds[msg.sender];
+    }
+
     function buyBeneficialInterest(bytes32 _trust_hash)
         public
         payable
@@ -361,7 +400,7 @@ contract SmartLawTrust {
 
         uint beneficiaryAmount = Trusts[_trust_hash].forSaleAmount / Trusts[_trust_hash].beneficiaries.length;
         for (i = 0; i < Trusts[_trust_hash].beneficiaries.length; i++) {
-            Trusts[_trust_hash].beneficiaries[i].transfer(beneficiaryAmount);
+            funds[msg.sender] += beneficiaryAmount;
         }
 
         bytes32[] memory emptyBytes32Array;
