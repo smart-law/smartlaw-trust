@@ -323,8 +323,7 @@ contract SmartLawTrust {
         bytes32[] memory emptyBytes32Array;
 
         uint length = Trusts[_trust_hash].saleList.length;
-        uint i;
-        for (i = 0; i < length; i++) {
+        for (uint i = 0; i < length; i++) {
             delete Trusts[_trust_hash].saleOptions[Trusts[_trust_hash].saleList[i]];
         }
 
