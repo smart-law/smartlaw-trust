@@ -1,423 +1,184 @@
 pragma solidity ^0.4.15;
 
-contract SmartLawTrust {
-    address public owner;
-    mapping (address => uint256) funds;
+import { Entity } from './Entity.sol';
+import { Trust } from './Trust.sol';
+import './Owned.sol';
 
-    struct LegalEntity {
-        uint category; //0 = individual, 1=llc, 2=c corp, 3=s corp, 4=llp, 5=trust
-        address ownerAddress; //ethereum address of legal entity
-        bool accreditedInvestor; //0=no, 1=yes
-        bool verified;
-        bool exist;
-    }
+contract SmartLawTrust is Owned {
+  bool public status; // disable or enable contract
 
-    mapping (address => LegalEntity) LegalEntities;
-    address[] public LegalEntityList;
+  address[] public entities;
+  mapping (address => bool) addressesOfEntities;
+  mapping (address => address) ownersEntity; // user address => entity address
+  mapping (address => address) entityOwners; // entity address => user address
 
-    struct Sale {
-        uint amount;
-        address[] signatures;
-    }
+  address[] public trusts;
 
-    struct Beneficiary {
-        address entity;
-        address[] signatures;
-    }
+  event EntityCreated(address entity);
+  event TrustCreated(address trust);
 
-    struct Trust {
-        string name; //name of trust
-        string trustProperty; //legal description of property
-        address[] beneficiaries; //supports multiple beneficiaries
-        mapping (bytes32 => Sale) saleOptions;
-        mapping (bytes32 => Beneficiary) pendingBeneficiary;
-        bytes32[] pendingBeneficiaryList;
-        bytes32[] saleList;
-        address[] dissolve;
-        bool exist;
-        uint safetyDelay; //safety delay to allow for freeze in event of security breach
-        bool deleted;
-        bool forSale;
-        uint forSaleAmount;
-    }
-    mapping (bytes32 => Trust) Trusts;
-    bytes32[] public TrustList;
+  function SmartLawTrust()
+      public
+      Owned(msg.sender)
+  {
+      status = true;
+  }
 
-    // Events
-    event LegalEntityCreated(address _entity);
-    event TrustCreated(bytes32 _trust);
+  modifier lawActive() {
+      require(status);
+      _;
+  }
 
-    function SmartLawTrust() public {
-        owner = msg.sender;
-    }
+  modifier entityExist(address _address) {
+      require(addressesOfEntities[_address]);
+      _;
+  }
 
-    modifier owner_only(address _address) {
-        require(_address == owner);
-        _;
-    }
+  modifier notEntityOwner(address _address) {
+      require(ownersEntity[_address] == 0x0);
+      _;
+  }
 
-    function is_beneficiary(bytes32 _trust_hash, address _address) private returns (bool) {
-        return is_found(Trusts[_trust_hash].beneficiaries, _address);
-    }
+  function trustAddresses()
+      public
+      lawActive
+      constant returns(address[])
+  {
+      return trusts;
+  }
 
-    function is_found(address[] _source, address _address) private returns (bool) {
-        for (uint i = 0; i < _source.length; i++) {
-            if (_source[i] == _address) {
-                return true;
-            }
-        }
-        return false;
-    }
+  function entityAddresses()
+      public
+      lawActive
+      constant returns(address[])
+  {
+      return entities;
+  }
 
-    function check_for_sale(bytes32 _trust_hash, bytes32 _sale_hash) private {
-        if (Trusts[_trust_hash].beneficiaries.length == Trusts[_trust_hash].saleOptions[_sale_hash].signatures.length) {
-            Trusts[_trust_hash].forSale = true;
-            Trusts[_trust_hash].forSaleAmount = Trusts[_trust_hash].saleOptions[_sale_hash].amount;
-        }
-    }
+  function updateStatus(bool _disable)
+      public
+      ownerOnly
+  {
+      status = _disable;
+  }
 
-    function check_add_beneficiary(bytes32 _trust_hash, bytes32 _beneficiary_hash) private {
-        if (Trusts[_trust_hash].beneficiaries.length == Trusts[_trust_hash].pendingBeneficiary[_beneficiary_hash].signatures.length) {
-            Trusts[_trust_hash].beneficiaries.push(Trusts[_trust_hash].pendingBeneficiary[_beneficiary_hash].entity);
-        }
-    }
+  function isEntity(address _address)
+      public
+      constant returns (bool)
+  {
+      return addressesOfEntities[_address];
+  }
 
-    modifier trust_beneficiary(bytes32 _trust_hash, address _address) {
-        require(Trusts[_trust_hash].exist);
-        require(is_beneficiary(_trust_hash, _address));
-        _;
-    }
+  function isEntityOwner(address _address)
+      public
+      constant returns (bool)
+  {
+      return ownersEntity[_address] != 0x0;
+  }
 
-    modifier entity_exist(address _address) {
-        require(LegalEntities[_address].exist);
-        _;
-    }
+  function entityAddress(address _owner)
+      public
+      constant returns (address)
+  {
+      return ownersEntity[_owner];
+  }
 
-    modifier entity_does_not_exist(address _address) {
-        require(!LegalEntities[_address].exist);
-        _;
-    }
+  function verifyEntity(address _entity)
+      public
+      lawActive
+      ownerOnly
+      entityExist(_entity)
+  {
+      Entity entity = Entity(_entity);
+      entity.verify();
+  }
 
-    modifier trust_exist(bytes32 _trust_hash) {
-        require(Trusts[_trust_hash].exist);
-        _;
-    }
+  function newEntity(uint _category, bool _investor)
+      public
+      lawActive
+      notEntityOwner(msg.sender)
+  {
+      Entity entity = new Entity(msg.sender, _category, _investor);
+      entities.push(entity);
+      addressesOfEntities[entity] = true;
+      ownersEntity[msg.sender] = entity;
+      entityOwners[entity] = msg.sender;
+      EntityCreated(entity);
+  }
 
-    modifier trust_not_deleted(bytes32 _trust_hash) {
-        require(!Trusts[_trust_hash].deleted);
-        _;
-    }
+  function transferEntityOwnership(address _entity, address _newOwner)
+      public
+      lawActive
+      entityExist(_entity)
+  {
+      Entity entity = Entity(_entity);
+      entity.transferOwnership(msg.sender, _newOwner);
+  }
 
-    modifier trust_not_for_sale(bytes32 _trust_hash) {
-        require(!Trusts[_trust_hash].forSale);
-        _;
-    }
+  function acceptEntityOwnership(address _entity)
+      public
+      lawActive
+      entityExist(_entity)
+  {
+      Entity entity = Entity(_entity);
+      entity.acceptOwnership(msg.sender);
+      ownersEntity[msg.sender] = entity;
+      delete ownersEntity[entityOwners[entity]];
+      entityOwners[entity] = msg.sender;
+  }
 
-    modifier trust_for_sale(bytes32 _trust_hash) {
-        require(Trusts[_trust_hash].forSale == true);
-        _;
-    }
+  function newTrust(string _name, string _property, address _beneficiary)
+      public
+      lawActive
+      ownerOnly
+      entityExist(_beneficiary)
+  {
+      Trust trust = new Trust(_name, _property, _beneficiary);
+      trusts.push(trust);
+      TrustCreated(trust);
+  }
 
-    function countLegalEntity() public constant returns(uint) {
-        return LegalEntityList.length;
-    }
+  /**
+   * @dev allows entity to withdraw, should be called only from entity contract
+   */
+  function withdraw()
+      public
+      entityExist(msg.sender)
+  {
+      require(entityOwners[msg.sender] != 0x0);
+      Entity entity = Entity(msg.sender);
+      uint funds = entity.availableFunds();
+      if(entityOwners[msg.sender].send(funds)) {
+          entity.sweepFunds();
+      }
+  }
 
-    function newLegalEntity(uint _category, bool _accreditedInvestor)
-        public
-        entity_does_not_exist(msg.sender)
-    {
+  function buyTrust(address _trust)
+      public
+      payable
+  {
+      require(isEntityOwner(msg.sender));
+      address _entity = entityAddress(msg.sender);
 
-        address _key = msg.sender;
-        var entity = LegalEntities[_key];
-        entity.category = _category;
-        entity.accreditedInvestor = _accreditedInvestor;
-        entity.ownerAddress = msg.sender;
-        entity.verified = false;
-        entity.exist = true;
-        LegalEntityList.push(_key);
-        funds[msg.sender] = 0;
-        LegalEntityCreated(_key);
-    }
+      Trust trust = Trust(_trust);
+      require(trust.forSale());
 
-    function verifyLegalEntity(address _address)
-        public
-        owner_only(msg.sender)
-        entity_exist(_address)
-    {
-        LegalEntities[_address].verified = true;
-    }
+      uint amount = trust.forSaleAmount();
+      require(msg.value >= amount);
+      uint beneficiariesCount = trust.beneficiariesCount();
 
-    function getLegalEntity(address _address)
-        public
-        entity_exist(_address)
-        constant returns (uint, bool, address, bool )
-    {
-        return (LegalEntities[_address].category, LegalEntities[_address].verified, LegalEntities[_address].ownerAddress, LegalEntities[_address].accreditedInvestor);
-    }
+      uint refund = msg.value - amount;
+      if(refund > 0) {
+          msg.sender.transfer(refund);
+      }
 
-    function countTrust() public constant returns(uint) {
-        return TrustList.length;
-    }
-
-    function newTrust(string _name, string _trustProperty, address _beneficiary)
-        public
-        owner_only(msg.sender)
-        entity_exist(_beneficiary)
-    {
-        var _key = keccak256((TrustList.length + 1));
-        var trust = Trusts[_key];
-        trust.name = _name;
-        trust.trustProperty = _trustProperty;
-        trust.deleted = false;
-        trust.forSale = false;
-        trust.forSaleAmount = 0;
-        trust.exist = true;
-        trust.beneficiaries.push(_beneficiary);
-        TrustList.push(_key);
-        TrustCreated(_key);
-    }
-
-    function isTrustBeneficiary(bytes32 _trust_hash, address _address)
-        public
-        trust_not_deleted(_trust_hash)
-        constant returns (bool)
-    {
-        return is_beneficiary(_trust_hash, _address);
-    }
-
-    function getTrust(bytes32 _trust_hash)
-        public
-        trust_exist(_trust_hash)
-        trust_not_deleted(_trust_hash)
-        constant returns (string, string, bool, uint, bool)
-    {
-        return (
-            Trusts[_trust_hash].name,
-            Trusts[_trust_hash].trustProperty,
-            Trusts[_trust_hash].forSale,
-            Trusts[_trust_hash].forSaleAmount,
-            Trusts[_trust_hash].deleted
-            );
-    }
-
-    function getTrustBeneficiaries(bytes32 _trust_hash)
-        public
-        trust_exist(_trust_hash)
-        trust_not_deleted(_trust_hash)
-        constant returns (address[])
-    {
-        return Trusts[_trust_hash].beneficiaries;
-    }
-
-    function getTrustDissolveSignatures(bytes32 _trust_hash)
-        public
-        trust_exist(_trust_hash)
-        trust_not_deleted(_trust_hash)
-        constant returns (address[])
-    {
-        return Trusts[_trust_hash].dissolve;
-    }
-
-    function getTrustSaleOffers(bytes32 _trust_hash)
-        public
-        trust_exist(_trust_hash)
-        trust_not_deleted(_trust_hash)
-        constant returns (bytes32[])
-    {
-        return Trusts[_trust_hash].saleList;
-    }
-
-    function getTrustPendingBeneficiaries(bytes32 _trust_hash)
-        public
-        trust_exist(_trust_hash)
-        trust_not_deleted(_trust_hash)
-        constant returns (bytes32[])
-    {
-        return Trusts[_trust_hash].pendingBeneficiaryList;
-    }
-
-    function addBeneficialInterest(bytes32 _trust_hash, address _address)
-        public
-        trust_beneficiary(_trust_hash, msg.sender)
-        trust_exist(_trust_hash)
-        entity_exist(_address)
-        trust_not_deleted(_trust_hash)
-    {
-
-        var _key = keccak256((Trusts[_trust_hash].pendingBeneficiaryList.length + 1));
-
-        Trusts[_trust_hash].pendingBeneficiary[_key].entity = _address;
-        Trusts[_trust_hash].pendingBeneficiary[_key].signatures.push(msg.sender);
-        Trusts[_trust_hash].pendingBeneficiaryList.push(_key);
-        check_add_beneficiary(_trust_hash, _key);
-        /*
-        Legal Statement:
-        By calling this function, I am assigning all of my rights as beneficiary to the legal entity identified above.
-        */
-    }
-
-    function agreeToAddBeneficiary(bytes32 _trust_hash, bytes32 _beneficiary_hash)
-        public
-        trust_not_deleted(_trust_hash)
-        trust_not_for_sale(_trust_hash)
-        trust_beneficiary(_trust_hash, msg.sender)
-    {
-        bool done = is_found(Trusts[_trust_hash].pendingBeneficiary[_beneficiary_hash].signatures, msg.sender);
-        if(done) {
-            revert();
-        } else {
-            Trusts[_trust_hash].pendingBeneficiary[_beneficiary_hash].signatures.push(msg.sender);
-            check_add_beneficiary(_trust_hash, _beneficiary_hash);
-        }
-    }
-
-    function getTrustSaleOfferDetail(bytes32 _trust_hash, bytes32 _sale_hash)
-        public
-        trust_exist(_trust_hash)
-        trust_not_deleted(_trust_hash)
-        constant returns(uint, address[])
-    {
-        return (
-            Trusts[_trust_hash].saleOptions[_sale_hash].amount,
-            Trusts[_trust_hash].saleOptions[_sale_hash].signatures
-        );
-    }
-
-    function getTrustPendingBeneficiaryDetail(bytes32 _trust_hash, bytes32 _beneficiary_hash)
-        public
-        trust_exist(_trust_hash)
-        trust_not_deleted(_trust_hash)
-        constant returns(uint, address[])
-    {
-        return (
-            Trusts[_trust_hash].pendingBeneficiary[_beneficiary_hash].entity,
-            Trusts[_trust_hash].pendingBeneficiary[_beneficiary_hash].signatures
-        );
-    }
-
-    function dissolveTrust(bytes32 _trust_hash)
-        public
-        trust_not_deleted(_trust_hash)
-        trust_not_for_sale(_trust_hash)
-        trust_beneficiary(_trust_hash, msg.sender)
-    {
-
-        bool done = is_found(Trusts[_trust_hash].dissolve, msg.sender);
-        if(done) {
-            revert();
-        } else {
-            Trusts[_trust_hash].dissolve.push(msg.sender);
-            if (Trusts[_trust_hash].dissolve.length == Trusts[_trust_hash].beneficiaries.length) {
-                Trusts[_trust_hash].deleted = true;
-            }
-        }
-    }
-
-    function cancelSale(bytes32 _trust_hash)
-        public
-        trust_beneficiary(_trust_hash, msg.sender)
-        trust_not_deleted(_trust_hash)
-        trust_for_sale(_trust_hash)
-    {
-
-        bytes32[] memory emptyBytes32Array;
-
-        uint length = Trusts[_trust_hash].saleList.length;
-        for (uint i = 0; i < length; i++) {
-            delete Trusts[_trust_hash].saleOptions[Trusts[_trust_hash].saleList[i]];
-        }
-
-        Trusts[_trust_hash].saleList = emptyBytes32Array;
-        Trusts[_trust_hash].forSale = false;
-        Trusts[_trust_hash].forSaleAmount = 0;
-
-    }
-
-    function agreeSaleOffer(bytes32 _trust_hash, bytes32 _sale_hash)
-        public
-        trust_not_deleted(_trust_hash)
-        trust_not_for_sale(_trust_hash)
-        trust_beneficiary(_trust_hash, msg.sender)
-    {
-        bool done = is_found(Trusts[_trust_hash].saleOptions[_sale_hash].signatures, msg.sender);
-        if(done) {
-            revert();
-        } else {
-            Trusts[_trust_hash].saleOptions[_sale_hash].signatures.push(msg.sender);
-            check_for_sale(_trust_hash, _sale_hash);
-        }
-    }
-
-    function offerBeneficialInterestForSale(bytes32 _trust_hash, uint _amount)
-        public
-        trust_not_deleted(_trust_hash)
-        trust_not_for_sale(_trust_hash)
-        trust_beneficiary(_trust_hash, msg.sender)
-    {
-        var _key = keccak256((Trusts[_trust_hash].saleList.length + 1));
-
-        Trusts[_trust_hash].saleOptions[_key].amount = _amount;
-        Trusts[_trust_hash].saleOptions[_key].signatures.push(msg.sender);
-        Trusts[_trust_hash].saleList.push(_key);
-        check_for_sale(_trust_hash, _key);
-
-        /* Legal Statement:
-        By calling this function, the beneficiaries agree to offer their beneficial interest in the trust for sale
-        */
-    }
-
-    function withdraw()
-        public
-        entity_exist(msg.sender)
-    {
-        msg.sender.transfer(funds[msg.sender]);
-    }
-
-    function balance()
-        public
-        entity_exist(msg.sender)
-        constant returns(uint256)
-    {
-        return funds[msg.sender];
-    }
-
-    function buyBeneficialInterest(bytes32 _trust_hash)
-        public
-        payable
-        trust_not_deleted(_trust_hash)
-        trust_for_sale(_trust_hash)
-    {
-        //this lets you buy beneficial interest that is currently offered for forSale
-
-        require(msg.value >= Trusts[_trust_hash].forSaleAmount);
-
-        uint i;
-        uint refund = msg.value - Trusts[_trust_hash].forSaleAmount;
-        if (refund > 0) {
-            msg.sender.transfer(refund);
-        }
-
-        uint beneficiaryAmount = Trusts[_trust_hash].forSaleAmount / Trusts[_trust_hash].beneficiaries.length;
-        for (i = 0; i < Trusts[_trust_hash].beneficiaries.length; i++) {
-            funds[msg.sender] += beneficiaryAmount;
-        }
-
-        bytes32[] memory emptyBytes32Array;
-        address[] memory emptyAddressArray;
-
-        Trusts[_trust_hash].dissolve = emptyAddressArray;
-
-        uint length = Trusts[_trust_hash].saleList.length;
-        for (i = 0; i < length; i++) {
-            delete Trusts[_trust_hash].saleOptions[Trusts[_trust_hash].saleList[i]];
-        }
-
-        Trusts[_trust_hash].saleList = emptyBytes32Array;
-        Trusts[_trust_hash].beneficiaries = emptyAddressArray;
-        Trusts[_trust_hash].beneficiaries.push(msg.sender);
-
-        Trusts[_trust_hash].forSale = false;
-        Trusts[_trust_hash].forSaleAmount = 0;
-    }
+      uint share = amount / beneficiariesCount;
+      for(uint i = 0; i < beneficiariesCount; i++) {
+          address beneficiary = trust.getBeneficiaryByIndex(i);
+          Entity entity = Entity(beneficiary);
+          entity.deposit(share);
+      }
+      trust.sold(_entity);
+  }
 
 }
