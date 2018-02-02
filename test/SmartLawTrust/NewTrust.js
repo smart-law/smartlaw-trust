@@ -1,4 +1,5 @@
 const SmartLawTrust = artifacts.require('./SmartLawTrust.sol');
+const EntityFactory = artifacts.require('./EntityFactory.sol');
 const Entity = artifacts.require('./Entity.sol');
 const Trust = artifacts.require('./Trust.sol');
 const utils = require('../helpers/Utils');
@@ -6,7 +7,8 @@ const utils = require('../helpers/Utils');
 contract('SmartLawTrust', (accounts) => {
     describe('newTrust()', () => {
         it('verifies that trust is not created when beneficiary is not an entity', async () => {
-            let contract = await SmartLawTrust.new({from: accounts[0]});
+            let entityFactory = await EntityFactory.new();
+            let contract = await SmartLawTrust.new(entityFactory.address);
             try {
                 await contract.newTrust('Test Trust', 'Test Property', accounts[9], {
                   from: accounts[0]
@@ -19,8 +21,9 @@ contract('SmartLawTrust', (accounts) => {
         });
 
         it('verifies that only active contract can create trust', async () => {
-            let contract = await SmartLawTrust.new();
-            let entity = await contract.newEntity(1, true, {from: accounts[9]});
+            let entityFactory = await EntityFactory.new();
+            let contract = await SmartLawTrust.new(entityFactory.address);
+            let entity = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[9]});
             await contract.updateStatus(false);
             try {
                 await contract.newTrust('Test Trust', 'Test Property', entity.logs[0].args.entity, {
@@ -34,8 +37,9 @@ contract('SmartLawTrust', (accounts) => {
         });
 
         it('verifies that only smart trust owner can create trust', async () => {
-            let contract = await SmartLawTrust.new({from: accounts[0]});
-            let entity = await contract.newEntity(1, true, {from: accounts[1]});
+            let entityFactory = await EntityFactory.new();
+            let contract = await SmartLawTrust.new(entityFactory.address);
+            let entity = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[1]});
             try {
                 await contract.newTrust('Test Trust', 'Test Property', entity.logs[0].args.entity, {
                   from: accounts[2]
@@ -48,8 +52,9 @@ contract('SmartLawTrust', (accounts) => {
         });
 
         it('should create trust', async () => {
-            let contract = await SmartLawTrust.new({from: accounts[0]});
-            let entity = await contract.newEntity(1, true, {from: accounts[1]});
+            let entityFactory = await EntityFactory.new();
+            let contract = await SmartLawTrust.new(entityFactory.address);
+            let entity = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[1]});
             let trust = await contract.newTrust('Test Trust', 'Test Property', entity.logs[0].args.entity, {
                 from: accounts[0]
             });

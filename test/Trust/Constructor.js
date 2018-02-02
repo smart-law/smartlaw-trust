@@ -1,5 +1,4 @@
 const Trust = artifacts.require('./Trust.sol');
-const SmartLawTrust = artifacts.require('./SmartLawTrust.sol');
 const utils = require('../helpers/Utils');
 
 contract('Trust', (accounts) => {

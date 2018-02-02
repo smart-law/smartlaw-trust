@@ -1,18 +1,20 @@
 const Trust = artifacts.require('./Trust.sol');
 const SmartLawTrust = artifacts.require('./SmartLawTrust.sol');
+const EntityFactory = artifacts.require('./EntityFactory.sol');
 const Beneficiary = artifacts.require('./Beneficiary.sol');
 const utils = require('../helpers/Utils');
 
 contract('Trust', (accounts) => {
     describe('getBeneficiaryByIndex()', () => {
       it('should return correct beneficiary', async () => {
-          let contract = await SmartLawTrust.new();
+          let entityFactory = await EntityFactory.new();
+          let contract = await SmartLawTrust.new(entityFactory.address);
 
-          let entity = await contract.newEntity(1, true, {from: accounts[1]});
-          let entity2 = await contract.newEntity(1, true, {from: accounts[2]});
-          let entity3 = await contract.newEntity(1, true, {from: accounts[3]});
-          let entity4 = await contract.newEntity(1, true, {from: accounts[4]});
-          let entity5 = await contract.newEntity(1, true, {from: accounts[5]});
+          let entity = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[1]});
+          let entity2 = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[2]});
+          let entity3 = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[3]});
+          let entity4 = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[4]});
+          let entity5 = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[5]});
 
           let trust = await contract.newTrust('Test Trust', 'Test Property', entity.logs[0].args.entity, {
               from: accounts[0]

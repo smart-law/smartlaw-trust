@@ -1,13 +1,15 @@
 const Trust = artifacts.require('./Trust.sol');
 const SmartLawTrust = artifacts.require('./SmartLawTrust.sol');
+const EntityFactory = artifacts.require('./EntityFactory.sol');
 const utils = require('../helpers/Utils');
 
 contract('Trust', (accounts) => {
     describe('isBeneficiary()', () => {
         it('verifies that it returns true', async () => {
-            let contract = await SmartLawTrust.new();
+            let entityFactory = await EntityFactory.new();
+            let contract = await SmartLawTrust.new(entityFactory.address);
 
-            let entity = await contract.newEntity(1, true, {from: accounts[1]});
+            let entity = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[1]});
             let trust = await contract.newTrust('Test Trust', 'Test Property', entity.logs[0].args.entity, {
                 from: accounts[0]
             });
@@ -16,9 +18,10 @@ contract('Trust', (accounts) => {
             assert.equal(isBeneficiary, true);
         });
         it('verifies that it returns false', async () => {
-            let contract = await SmartLawTrust.new();
+            let entityFactory = await EntityFactory.new();
+            let contract = await SmartLawTrust.new(entityFactory.address);
 
-            let entity = await contract.newEntity(1, true, {from: accounts[1]});
+            let entity = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[1]});
             let trust = await contract.newTrust('Test Trust', 'Test Property', entity.logs[0].args.entity, {
                 from: accounts[0]
             });

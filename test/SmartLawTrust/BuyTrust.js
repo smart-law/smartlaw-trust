@@ -1,3 +1,4 @@
+const EntityFactory = artifacts.require('./EntityFactory.sol');
 const SmartLawTrust = artifacts.require('./SmartLawTrust.sol');
 const Entity = artifacts.require('./Entity.sol');
 const Trust = artifacts.require('./Trust.sol');
@@ -6,9 +7,10 @@ const utils = require('../helpers/Utils');
 contract('SmartLawTrust', (accounts) => {
     describe('buyTrust()', () => {
         it('verifies that only entity owner can buy trust', async () => {
-            let contract = await SmartLawTrust.new({from: accounts[9]});
+            let entityFactory = await EntityFactory.new();
+            let contract = await SmartLawTrust.new(entityFactory.address, {from: accounts[9]});
 
-            let entity = await contract.newEntity(1, true, {from: accounts[3]});
+            let entity = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[3]});
             let trust = await contract.newTrust('Test Trust', 'Test Property', entity.logs[0].args.entity, {
                 from: accounts[9]
             });
@@ -28,13 +30,14 @@ contract('SmartLawTrust', (accounts) => {
         });
 
         it('verifies that only for sale trust can be bought', async () => {
-            let contract = await SmartLawTrust.new({from: accounts[9]});
+            let entityFactory = await EntityFactory.new();
+            let contract = await SmartLawTrust.new(entityFactory.address, {from: accounts[9]});
 
-            let entity = await contract.newEntity(1, true, {from: accounts[3]});
+            let entity = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[3]});
             let trust = await contract.newTrust('Test Trust', 'Test Property', entity.logs[0].args.entity, {
                 from: accounts[9]
             });
-            let buyer = await contract.newEntity(1, true, {from: accounts[4]});
+            let buyer = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[4]});
             try {
                 await contract.buyTrust(trust.logs[0].args.trust, {from: accounts[4]});
                 assert(false, "didn't throw");
@@ -45,13 +48,14 @@ contract('SmartLawTrust', (accounts) => {
         });
 
         it('verifies that buying trust failed on amount less than the for sale amount', async () => {
-            let contract = await SmartLawTrust.new({from: accounts[9]});
+            let entityFactory = await EntityFactory.new();
+            let contract = await SmartLawTrust.new(entityFactory.address, {from: accounts[9]});
 
-            let entity = await contract.newEntity(1, true, {from: accounts[3]});
+            let entity = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[3]});
             let trust = await contract.newTrust('Test Trust', 'Test Property', entity.logs[0].args.entity, {
                 from: accounts[9]
             });
-            let buyer = await contract.newEntity(1, true, {from: accounts[4]});
+            let buyer = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[4]});
             let trustContract = await Trust.at(trust.logs[0].args.trust);
             await trustContract.newSaleOffer(1000000000000000000, {from: accounts[3]});
             let forSale = await trustContract.forSale.call();
@@ -68,14 +72,15 @@ contract('SmartLawTrust', (accounts) => {
         });
 
         it('verifies that beneficiary will have the total amount of the trust sold', async () => {
-            let contract = await SmartLawTrust.new({from: accounts[9]});
+            let entityFactory = await EntityFactory.new();
+            let contract = await SmartLawTrust.new(entityFactory.address, {from: accounts[9]});
 
-            let entity = await contract.newEntity(1, true, {from: accounts[3]});
+            let entity = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[3]});
             let trust = await contract.newTrust('Test Trust', 'Test Property', entity.logs[0].args.entity, {
                 from: accounts[9]
             });
             let amount = 1000000000000000000;
-            let buyer = await contract.newEntity(1, true, {from: accounts[4]});
+            let buyer = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[4]});
             let trustContract = await Trust.at(trust.logs[0].args.trust);
             await trustContract.newSaleOffer(amount, {from: accounts[3]});
             let forSale = await trustContract.forSale.call();
@@ -90,12 +95,13 @@ contract('SmartLawTrust', (accounts) => {
 
         it('verifies that beneficiaries will have correct amount when for sale amount of the trust sold was equally divided', async () => {
             let amount = 1000000000000000000;
-            let contract = await SmartLawTrust.new({from: accounts[9]});
+            let entityFactory = await EntityFactory.new();
+            let contract = await SmartLawTrust.new(entityFactory.address, {from: accounts[9]});
 
-            let entity = await contract.newEntity(1, true, {from: accounts[3]});
-            let entity2 = await contract.newEntity(1, true, {from: accounts[4]});
-            let entity3 = await contract.newEntity(1, true, {from: accounts[5]});
-            let entity4 = await contract.newEntity(1, true, {from: accounts[6]});
+            let entity = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[3]});
+            let entity2 = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[4]});
+            let entity3 = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[5]});
+            let entity4 = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[6]});
 
             let trust = await contract.newTrust('Test Trust', 'Test Property', entity.logs[0].args.entity, {
                 from: accounts[9]
@@ -111,7 +117,7 @@ contract('SmartLawTrust', (accounts) => {
 
             let beneficiariesCount = await trustContract.beneficiariesCount.call();
 
-            let buyer = await contract.newEntity(1, true, {from: accounts[8]});
+            let buyer = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[8]});
             let saleOffer = await trustContract.newSaleOffer(amount, {from: accounts[3]});
             await trustContract.agreeToSaleOffer(saleOffer.logs[0].args.sale, {from: accounts[4]});
             await trustContract.agreeToSaleOffer(saleOffer.logs[0].args.sale, {from: accounts[5]});
@@ -139,11 +145,12 @@ contract('SmartLawTrust', (accounts) => {
 
         it('verifies that beneficiaries will have correct amount when for sale amount of the trust sold was equally divided', async () => {
             let amount = 1000000000000000000;
-            let contract = await SmartLawTrust.new({from: accounts[9]});
+            let entityFactory = await EntityFactory.new();
+            let contract = await SmartLawTrust.new(entityFactory.address, {from: accounts[9]});
 
-            let entity = await contract.newEntity(1, true, {from: accounts[3]});
-            let entity2 = await contract.newEntity(1, true, {from: accounts[4]});
-            let entity3 = await contract.newEntity(1, true, {from: accounts[5]});
+            let entity = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[3]});
+            let entity2 = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[4]});
+            let entity3 = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[5]});
 
             let trust = await contract.newTrust('Test Trust', 'Test Property', entity.logs[0].args.entity, {
                 from: accounts[9]
@@ -156,7 +163,7 @@ contract('SmartLawTrust', (accounts) => {
 
             let beneficiariesCount = await trustContract.beneficiariesCount.call();
 
-            let buyer = await contract.newEntity(1, true, {from: accounts[8]});
+            let buyer = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[8]});
             let saleOffer = await trustContract.newSaleOffer(amount, {from: accounts[3]});
             await trustContract.agreeToSaleOffer(saleOffer.logs[0].args.sale, {from: accounts[4]});
             await trustContract.agreeToSaleOffer(saleOffer.logs[0].args.sale, {from: accounts[5]});

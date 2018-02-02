@@ -1,13 +1,15 @@
 const Trust = artifacts.require('./Trust.sol');
+const EntityFactory = artifacts.require('./EntityFactory.sol');
 const SmartLawTrust = artifacts.require('./SmartLawTrust.sol');
 const utils = require('../helpers/Utils');
 
 contract('Trust', (accounts) => {
     describe('newBeneficiary()', () => {
         it('verifies that only existing trust beneficiary can add new beneficiary', async () => {
-            let contract = await SmartLawTrust.new();
+            let entityFactory = await EntityFactory.new();
+            let contract = await SmartLawTrust.new(entityFactory.address);
 
-            let entity = await contract.newEntity(1, true, {from: accounts[1]});
+            let entity = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[1]});
             let trust = await contract.newTrust('Test Trust', 'Test Property', entity.logs[0].args.entity, {
                 from: accounts[0]
             });
@@ -23,15 +25,16 @@ contract('Trust', (accounts) => {
         });
 
         it('verifies that only existing entity can be added as trust beneficiary', async () => {
-            let contract = await SmartLawTrust.new();
+            let entityFactory = await EntityFactory.new();
+            let contract = await SmartLawTrust.new(entityFactory.address);
 
-            let entity = await contract.newEntity(1, true, {from: accounts[1]});
+            let entity = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[1]});
             let trust = await contract.newTrust('Test Trust', 'Test Property', entity.logs[0].args.entity, {
                 from: accounts[0]
             });
             let trustContract = await Trust.at(trust.logs[0].args.trust);
 
-            let beneficiaryEntity = await contract.newEntity(1, true, {from: accounts[2]});
+            let beneficiaryEntity = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[2]});
             try {
                 await trustContract.newBeneficiary(accounts[2], {from: accounts[1]});
                 assert(false, "didn't throw");
@@ -42,15 +45,16 @@ contract('Trust', (accounts) => {
         });
 
         it('should add new beneficiary', async () => {
-            let contract = await SmartLawTrust.new();
+            let entityFactory = await EntityFactory.new();
+            let contract = await SmartLawTrust.new(entityFactory.address);
 
-            let entity = await contract.newEntity(1, true, {from: accounts[1]});
+            let entity = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[1]});
             let trust = await contract.newTrust('Test Trust', 'Test Property', entity.logs[0].args.entity, {
                 from: accounts[0]
             });
             let trustContract = await Trust.at(trust.logs[0].args.trust);
 
-            let beneficiaryEntity = await contract.newEntity(1, true, {from: accounts[2]});
+            let beneficiaryEntity = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[2]});
             await trustContract.newBeneficiary(beneficiaryEntity.logs[0].args.entity, {from: accounts[1]});
 
             let isBeneficiary = await trustContract.isBeneficiary.call(entity.logs[0].args.entity);
@@ -62,29 +66,31 @@ contract('Trust', (accounts) => {
         });
 
         it('verifies that new beneficiary fires a BeneficiaryAdded event', async () => {
-            let contract = await SmartLawTrust.new();
+            let entityFactory = await EntityFactory.new();
+            let contract = await SmartLawTrust.new(entityFactory.address);
 
-            let entity = await contract.newEntity(1, true, {from: accounts[1]});
+            let entity = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[1]});
             let trust = await contract.newTrust('Test Trust', 'Test Property', entity.logs[0].args.entity, {
                 from: accounts[0]
             });
             let trustContract = await Trust.at(trust.logs[0].args.trust);
 
-            let beneficiaryEntity = await contract.newEntity(1, true, {from: accounts[2]});
+            let beneficiaryEntity = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[2]});
             let res = await trustContract.newBeneficiary(beneficiaryEntity.logs[0].args.entity, {from: accounts[1]});
             assert(res.logs.length > 0 && res.logs[0].event == 'BeneficiaryAdded');
         });
 
         it('should add new pending beneficiary', async () => {
-            let contract = await SmartLawTrust.new();
+            let entityFactory = await EntityFactory.new();
+            let contract = await SmartLawTrust.new(entityFactory.address);
 
-            let entity = await contract.newEntity(1, true, {from: accounts[1]});
+            let entity = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[1]});
             let trust = await contract.newTrust('Test Trust', 'Test Property', entity.logs[0].args.entity, {
                 from: accounts[0]
             });
             let trustContract = await Trust.at(trust.logs[0].args.trust);
 
-            let beneficiaryEntity = await contract.newEntity(1, true, {from: accounts[2]});
+            let beneficiaryEntity = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[2]});
             await trustContract.newBeneficiary(beneficiaryEntity.logs[0].args.entity, {from: accounts[1]});
 
             let isBeneficiary = await trustContract.isBeneficiary.call(entity.logs[0].args.entity);
@@ -94,7 +100,7 @@ contract('Trust', (accounts) => {
             let beneficiaries = await trustContract.beneficiariesSignatures.call();
             assert.equal(beneficiaries.length, 2);
 
-            let newBeneficiaryEntity = await contract.newEntity(1, true, {from: accounts[3]});
+            let newBeneficiaryEntity = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[3]});
             await trustContract.newBeneficiary(newBeneficiaryEntity.logs[0].args.entity, {from: accounts[1]});
             beneficiaries = await trustContract.beneficiariesSignatures.call();
             assert.equal(beneficiaries.length, 2);
@@ -103,18 +109,19 @@ contract('Trust', (accounts) => {
         });
 
         it('verifies that new beneficiary fires a PendingBeneficiaryAdded event', async () => {
-            let contract = await SmartLawTrust.new();
+            let entityFactory = await EntityFactory.new();
+            let contract = await SmartLawTrust.new(entityFactory.address);
 
-            let entity = await contract.newEntity(1, true, {from: accounts[1]});
+            let entity = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[1]});
             let trust = await contract.newTrust('Test Trust', 'Test Property', entity.logs[0].args.entity, {
                 from: accounts[0]
             });
             let trustContract = await Trust.at(trust.logs[0].args.trust);
 
-            let beneficiaryEntity = await contract.newEntity(1, true, {from: accounts[2]});
+            let beneficiaryEntity = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[2]});
             await trustContract.newBeneficiary(beneficiaryEntity.logs[0].args.entity, {from: accounts[1]});
 
-            let newBeneficiaryEntity = await contract.newEntity(1, true, {from: accounts[3]});
+            let newBeneficiaryEntity = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[3]});
             let res = await trustContract.newBeneficiary(newBeneficiaryEntity.logs[0].args.entity, {from: accounts[2]});
             assert(res.logs.length > 0 && res.logs[0].event == 'PendingBeneficiaryAdded');
         });

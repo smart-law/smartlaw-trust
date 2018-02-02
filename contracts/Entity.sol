@@ -3,6 +3,8 @@ import './Trusteed.sol';
 import { SmartLawTrust } from './SmartLawTrust.sol';
 
 contract Entity is Trusteed {
+    address public factory;
+
     address public owner;
     address public newOwner;
 
@@ -11,24 +13,34 @@ contract Entity is Trusteed {
     uint public category;
     bool public isAccreditedInvestor;
     bool public verified;
+    string public country;
 
     function Entity(
+        address _trustee,
         address _owner,
         uint _category,
-        bool _investor
+        bool _investor,
+        string _country
       )
         public
-        Trusteed(msg.sender)
+        Trusteed(_trustee)
     {
         owner = _owner;
         category = _category;
         isAccreditedInvestor = _investor;
+        country = _country;
         verified = false;
         funds = 0;
+        factory = msg.sender;
     }
 
     modifier ownerOnly(address _address) {
         require(_address == owner);
+        _;
+    }
+
+    modifier factoryOnly() {
+        require(factory == msg.sender);
         _;
     }
 
@@ -51,7 +63,7 @@ contract Entity is Trusteed {
     function transferOwnership(address _sender, address _newOwner)
         public
         ownerOnly(_sender)
-        trusteeOnly(msg.sender)
+        factoryOnly
     {
         require(_newOwner != owner);
         newOwner = _newOwner;
@@ -59,7 +71,7 @@ contract Entity is Trusteed {
 
     function acceptOwnership(address _sender)
         public
-        trusteeOnly(msg.sender)
+        factoryOnly
     {
         require(_sender == newOwner);
         owner = newOwner;
