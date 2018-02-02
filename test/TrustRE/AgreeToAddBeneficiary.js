@@ -1,4 +1,4 @@
-const Trust = artifacts.require('./Trust.sol');
+const TrustRE = artifacts.require('./TrustRE.sol');
 const EntityFactory = artifacts.require('./EntityFactory.sol');
 const SmartTrustRE = artifacts.require('./SmartTrustRE.sol');
 const Beneficiary = artifacts.require('./Beneficiary.sol');
@@ -14,7 +14,7 @@ contract('Trust', (accounts) => {
           let trust = await contract.newTrust('Test Trust', 'Test Property', entity.logs[0].args.entity, {
               from: accounts[0]
           });
-          let trustContract = await Trust.at(trust.logs[0].args.trust);
+          let trustContract = await TrustRE.at(trust.logs[0].args.trust);
           let entity2 = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[2]});
           let entity3 = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[3]});
 
@@ -37,7 +37,7 @@ contract('Trust', (accounts) => {
           let trust = await contract.newTrust('Test Trust', 'Test Property', entity.logs[0].args.entity, {
               from: accounts[0]
           });
-          let trustContract = await Trust.at(trust.logs[0].args.trust);
+          let trustContract = await TrustRE.at(trust.logs[0].args.trust);
           let entity2 = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[2]});
           let entity3 = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[3]});
           let entity4 = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[4]});
@@ -63,7 +63,7 @@ contract('Trust', (accounts) => {
           let trust = await contract.newTrust('Test Trust', 'Test Property', entity.logs[0].args.entity, {
               from: accounts[0]
           });
-          let trustContract = await Trust.at(trust.logs[0].args.trust);
+          let trustContract = await TrustRE.at(trust.logs[0].args.trust);
           let beneficiaries = await trustContract.beneficiariesSignatures.call();
           assert.equal(beneficiaries.length, 1);
           let entity2 = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[2]});

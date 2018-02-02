@@ -1,7 +1,6 @@
 const SmartTrustRE = artifacts.require('./SmartTrustRE.sol');
 const EntityFactory = artifacts.require('./EntityFactory.sol');
 const Entity = artifacts.require('./Entity.sol');
-const Trust = artifacts.require('./Trust.sol');
 const utils = require('../helpers/Utils');
 
 contract('SmartTrustRE', (accounts) => {

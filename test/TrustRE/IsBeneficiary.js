@@ -1,9 +1,9 @@
-const Trust = artifacts.require('./Trust.sol');
+const TrustRE = artifacts.require('./TrustRE.sol');
 const SmartTrustRE = artifacts.require('./SmartTrustRE.sol');
 const EntityFactory = artifacts.require('./EntityFactory.sol');
 const utils = require('../helpers/Utils');
 
-contract('Trust', (accounts) => {
+contract('TrustRE', (accounts) => {
     describe('isBeneficiary()', () => {
         it('verifies that it returns true', async () => {
             let entityFactory = await EntityFactory.new();
@@ -13,7 +13,7 @@ contract('Trust', (accounts) => {
             let trust = await contract.newTrust('Test Trust', 'Test Property', entity.logs[0].args.entity, {
                 from: accounts[0]
             });
-            let trustContract = await Trust.at(trust.logs[0].args.trust);
+            let trustContract = await TrustRE.at(trust.logs[0].args.trust);
             let isBeneficiary = await trustContract.isBeneficiary.call(entity.logs[0].args.entity);
             assert.equal(isBeneficiary, true);
         });
@@ -25,7 +25,7 @@ contract('Trust', (accounts) => {
             let trust = await contract.newTrust('Test Trust', 'Test Property', entity.logs[0].args.entity, {
                 from: accounts[0]
             });
-            let trustContract = await Trust.at(trust.logs[0].args.trust);
+            let trustContract = await TrustRE.at(trust.logs[0].args.trust);
             let isBeneficiary = await trustContract.isBeneficiary.call(accounts[9]);
             assert.equal(isBeneficiary, false);
         });

@@ -1,10 +1,10 @@
-const Trust = artifacts.require('./Trust.sol');
+const TrustRE = artifacts.require('./TrustRE.sol');
 const utils = require('../helpers/Utils');
 
-contract('Trust', (accounts) => {
+contract('TrustRE', (accounts) => {
     describe('sold()', () => {
         it('verifies that only trustee can initiate sold', async () => {
-            let contract = await Trust.new('Test Trust', 'Test Property', accounts[0], {from: accounts[9]});
+            let contract = await TrustRE.new('Test Trust', 'Test Property', accounts[0], {from: accounts[9]});
 
             try {
                 await contract.sold(accounts[1], {from: accounts[2]});

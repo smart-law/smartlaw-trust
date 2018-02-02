@@ -1,13 +1,13 @@
 pragma solidity ^0.4.15;
 import './UtilsLib.sol';
 
-contract UnderTrust {
+contract Signable {
 
     address public trust;
     bool public disabled;
     address[] signatures;
 
-    function UnderTrust(address _trust)
+    function Signable(address _trust)
         public
     {
         trust = _trust;
@@ -44,7 +44,6 @@ contract UnderTrust {
 
     function getSignatures()
         public
-        enabledOnly
         constant returns (address[])
     {
         return signatures;
@@ -52,7 +51,6 @@ contract UnderTrust {
 
     function countSignatures()
         public
-        enabledOnly
         constant returns (uint)
     {
         return signatures.length;

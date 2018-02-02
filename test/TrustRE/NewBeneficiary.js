@@ -1,9 +1,9 @@
-const Trust = artifacts.require('./Trust.sol');
+const TrustRE = artifacts.require('./TrustRE.sol');
 const EntityFactory = artifacts.require('./EntityFactory.sol');
 const SmartTrustRE = artifacts.require('./SmartTrustRE.sol');
 const utils = require('../helpers/Utils');
 
-contract('Trust', (accounts) => {
+contract('TrustRE', (accounts) => {
     describe('newBeneficiary()', () => {
         it('verifies that only existing trust beneficiary can add new beneficiary', async () => {
             let entityFactory = await EntityFactory.new();
@@ -13,7 +13,7 @@ contract('Trust', (accounts) => {
             let trust = await contract.newTrust('Test Trust', 'Test Property', entity.logs[0].args.entity, {
                 from: accounts[0]
             });
-            let trustContract = await Trust.at(trust.logs[0].args.trust);
+            let trustContract = await TrustRE.at(trust.logs[0].args.trust);
 
             try {
                 await trustContract.newBeneficiary(accounts[9], {from: accounts[2]});
@@ -32,7 +32,7 @@ contract('Trust', (accounts) => {
             let trust = await contract.newTrust('Test Trust', 'Test Property', entity.logs[0].args.entity, {
                 from: accounts[0]
             });
-            let trustContract = await Trust.at(trust.logs[0].args.trust);
+            let trustContract = await TrustRE.at(trust.logs[0].args.trust);
 
             let beneficiaryEntity = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[2]});
             try {
@@ -52,7 +52,7 @@ contract('Trust', (accounts) => {
             let trust = await contract.newTrust('Test Trust', 'Test Property', entity.logs[0].args.entity, {
                 from: accounts[0]
             });
-            let trustContract = await Trust.at(trust.logs[0].args.trust);
+            let trustContract = await TrustRE.at(trust.logs[0].args.trust);
 
             let beneficiaryEntity = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[2]});
             await trustContract.newBeneficiary(beneficiaryEntity.logs[0].args.entity, {from: accounts[1]});
@@ -73,7 +73,7 @@ contract('Trust', (accounts) => {
             let trust = await contract.newTrust('Test Trust', 'Test Property', entity.logs[0].args.entity, {
                 from: accounts[0]
             });
-            let trustContract = await Trust.at(trust.logs[0].args.trust);
+            let trustContract = await TrustRE.at(trust.logs[0].args.trust);
 
             let beneficiaryEntity = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[2]});
             let res = await trustContract.newBeneficiary(beneficiaryEntity.logs[0].args.entity, {from: accounts[1]});
@@ -88,7 +88,7 @@ contract('Trust', (accounts) => {
             let trust = await contract.newTrust('Test Trust', 'Test Property', entity.logs[0].args.entity, {
                 from: accounts[0]
             });
-            let trustContract = await Trust.at(trust.logs[0].args.trust);
+            let trustContract = await TrustRE.at(trust.logs[0].args.trust);
 
             let beneficiaryEntity = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[2]});
             await trustContract.newBeneficiary(beneficiaryEntity.logs[0].args.entity, {from: accounts[1]});
@@ -116,7 +116,7 @@ contract('Trust', (accounts) => {
             let trust = await contract.newTrust('Test Trust', 'Test Property', entity.logs[0].args.entity, {
                 from: accounts[0]
             });
-            let trustContract = await Trust.at(trust.logs[0].args.trust);
+            let trustContract = await TrustRE.at(trust.logs[0].args.trust);
 
             let beneficiaryEntity = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[2]});
             await trustContract.newBeneficiary(beneficiaryEntity.logs[0].args.entity, {from: accounts[1]});

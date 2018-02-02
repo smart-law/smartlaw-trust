@@ -1,7 +1,7 @@
 const SmartTrustRE = artifacts.require('./SmartTrustRE.sol');
 const EntityFactory = artifacts.require('./EntityFactory.sol');
 const Entity = artifacts.require('./Entity.sol');
-const Trust = artifacts.require('./Trust.sol');
+const TrustRE = artifacts.require('./TrustRE.sol');
 const utils = require('../helpers/Utils');
 
 contract('SmartTrustRE', (accounts) => {
@@ -58,7 +58,7 @@ contract('SmartTrustRE', (accounts) => {
             let trust = await contract.newTrust('Test Trust', 'Test Property', entity.logs[0].args.entity, {
                 from: accounts[0]
             });
-            let trustContract = await Trust.at(trust.logs[0].args.trust);
+            let trustContract = await TrustRE.at(trust.logs[0].args.trust);
             let TrustName = await trustContract.name.call();
             assert.equal(TrustName, 'Test Trust');
             let TrustProperty = await trustContract.property.call();

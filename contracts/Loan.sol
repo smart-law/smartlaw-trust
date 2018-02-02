@@ -1,18 +1,19 @@
 pragma solidity ^0.4.15;
-import './UnderTrust.sol';
+import './Signable.sol';
 
-contract Loan is UnderTrust {
+contract Loan is Signable {
 
   uint public amount; // wei
   uint public interest;
-  uint public date;
+  uint public dueDate;
 
-  function Loan(address _trust, uint _amount, uint _interest, address _signature)
+  function Loan(address _trust, uint _amount, uint _interest, uint _dueDate, address _signature)
       public
-      UnderTrust(_trust)
+      Signable(_trust)
   {
       amount = _amount;
       interest = _interest;
+      dueDate = _dueDate;
       signatures.push(_signature);
   }
 }

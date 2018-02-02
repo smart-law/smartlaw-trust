@@ -1,7 +1,7 @@
 const EntityFactory = artifacts.require('./EntityFactory.sol');
 const SmartTrustRE = artifacts.require('./SmartTrustRE.sol');
 const Entity = artifacts.require('./Entity.sol');
-const Trust = artifacts.require('./Trust.sol');
+const TrustRE = artifacts.require('./TrustRE.sol');
 const utils = require('../helpers/Utils');
 
 contract('SmartTrustRE', (accounts) => {
@@ -14,7 +14,7 @@ contract('SmartTrustRE', (accounts) => {
             let trust = await contract.newTrust('Test Trust', 'Test Property', entity.logs[0].args.entity, {
                 from: accounts[9]
             });
-            let trustContract = await Trust.at(trust.logs[0].args.trust);
+            let trustContract = await TrustRE.at(trust.logs[0].args.trust);
             await trustContract.newSaleOffer(5, {from: accounts[3]});
             let forSale = await trustContract.forSale.call();
             assert.equal(forSale, true);
@@ -56,7 +56,7 @@ contract('SmartTrustRE', (accounts) => {
                 from: accounts[9]
             });
             let buyer = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[4]});
-            let trustContract = await Trust.at(trust.logs[0].args.trust);
+            let trustContract = await TrustRE.at(trust.logs[0].args.trust);
             await trustContract.newSaleOffer(1000000000000000000, {from: accounts[3]});
             let forSale = await trustContract.forSale.call();
             assert.equal(forSale, true);
@@ -81,7 +81,7 @@ contract('SmartTrustRE', (accounts) => {
             });
             let amount = 1000000000000000000;
             let buyer = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[4]});
-            let trustContract = await Trust.at(trust.logs[0].args.trust);
+            let trustContract = await TrustRE.at(trust.logs[0].args.trust);
             await trustContract.newSaleOffer(amount, {from: accounts[3]});
             let forSale = await trustContract.forSale.call();
             assert.equal(forSale, true);
@@ -106,7 +106,7 @@ contract('SmartTrustRE', (accounts) => {
             let trust = await contract.newTrust('Test Trust', 'Test Property', entity.logs[0].args.entity, {
                 from: accounts[9]
             });
-            let trustContract = await Trust.at(trust.logs[0].args.trust);
+            let trustContract = await TrustRE.at(trust.logs[0].args.trust);
 
             await trustContract.newBeneficiary(entity2.logs[0].args.entity, {from: accounts[3]});
             let newBeneficiaryRes = await trustContract.newBeneficiary(entity3.logs[0].args.entity, {from: accounts[3]});
@@ -155,7 +155,7 @@ contract('SmartTrustRE', (accounts) => {
             let trust = await contract.newTrust('Test Trust', 'Test Property', entity.logs[0].args.entity, {
                 from: accounts[9]
             });
-            let trustContract = await Trust.at(trust.logs[0].args.trust);
+            let trustContract = await TrustRE.at(trust.logs[0].args.trust);
 
             await trustContract.newBeneficiary(entity2.logs[0].args.entity, {from: accounts[3]});
             let newBeneficiaryRes = await trustContract.newBeneficiary(entity3.logs[0].args.entity, {from: accounts[3]});

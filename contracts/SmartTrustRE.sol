@@ -2,7 +2,7 @@ pragma solidity ^0.4.15;
 
 import { EntityFactory } from './EntityFactory.sol';
 import { Entity } from './Entity.sol';
-import { Trust } from './Trust.sol';
+import { TrustRE } from './TrustRE.sol';
 import './Owned.sol';
 
 contract SmartTrustRE is Owned {
@@ -66,7 +66,7 @@ contract SmartTrustRE is Owned {
   {
       EntityFactory entityFactoryInstance = EntityFactory(entityFactory);
       require(entityFactoryInstance.isEntity(_beneficiary));
-      Trust trust = new Trust(_name, _property, _beneficiary);
+      TrustRE trust = new TrustRE(_name, _property, _beneficiary);
       trusts.push(trust);
       TrustCreated(trust);
   }
@@ -96,7 +96,7 @@ contract SmartTrustRE is Owned {
       require(entityFactoryInstance.isEntityOwner(msg.sender));
       address _entity = entityFactoryInstance.entityAddress(msg.sender);
 
-      Trust trust = Trust(_trust);
+      TrustRE trust = TrustRE(_trust);
       require(trust.forSale());
 
       uint amount = trust.forSaleAmount();

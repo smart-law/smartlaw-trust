@@ -1,6 +1,6 @@
 const EntityFactory = artifacts.require('./EntityFactory.sol');
 const SmartTrustRE = artifacts.require('./SmartTrustRE.sol');
-const Trust = artifacts.require('./Trust.sol');
+const TrustRE = artifacts.require('./TrustRE.sol');
 const Entity = artifacts.require('./Entity.sol');
 const utils = require('./helpers/Utils');
 const Web3 = require('web3');
@@ -150,7 +150,7 @@ contract('Entity', (accounts) => {
         });
         let amount = 1000000000000000000;
         let buyer = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[4]});
-        let trustContract = await Trust.at(trust.logs[0].args.trust);
+        let trustContract = await TrustRE.at(trust.logs[0].args.trust);
         await trustContract.newSaleOffer(amount, {from: accounts[3]});
         let forSale = await trustContract.forSale.call();
         let forSaleAmount = await trustContract.forSaleAmount.call();
