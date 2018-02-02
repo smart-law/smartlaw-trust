@@ -1,6 +1,6 @@
 pragma solidity ^0.4.15;
 import './Trusteed.sol';
-import { SmartLawTrust } from './SmartLawTrust.sol';
+import { SmartTrustRE } from './SmartTrustRE.sol';
 
 contract Entity is Trusteed {
     address public factory;
@@ -82,7 +82,7 @@ contract Entity is Trusteed {
         public
         ownerOnly(msg.sender)
     {
-        SmartLawTrust smartLaw = SmartLawTrust(trustee);
+        SmartTrustRE smartLaw = SmartTrustRE(trustee);
         smartLaw.withdraw();
     }
 

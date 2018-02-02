@@ -1,6 +1,6 @@
 const Trust = artifacts.require('./Trust.sol');
 const EntityFactory = artifacts.require('./EntityFactory.sol');
-const SmartLawTrust = artifacts.require('./SmartLawTrust.sol');
+const SmartTrustRE = artifacts.require('./SmartTrustRE.sol');
 const Sale = artifacts.require('./Sale.sol');
 const utils = require('../helpers/Utils');
 
@@ -8,7 +8,7 @@ contract('Trust', (accounts) => {
     describe('dissolve()', () => {
         it('verifies that only existing trust beneficiary can sign dissolve trust', async () => {
             let entityFactory = await EntityFactory.new();
-            let contract = await SmartLawTrust.new(entityFactory.address, {from: accounts[9]});
+            let contract = await SmartTrustRE.new(entityFactory.address, {from: accounts[9]});
 
             let entity = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[3]});
             let trust = await contract.newTrust('Test Trust', 'Test Property', entity.logs[0].args.entity, {
@@ -26,7 +26,7 @@ contract('Trust', (accounts) => {
 
         it('verifies that it adds signature to dissolve signatures list', async () => {
             let entityFactory = await EntityFactory.new();
-            let contract = await SmartLawTrust.new(entityFactory.address, {from: accounts[9]});
+            let contract = await SmartTrustRE.new(entityFactory.address, {from: accounts[9]});
 
             let entity = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[3]});
             let trust = await contract.newTrust('Test Trust', 'Test Property', entity.logs[0].args.entity, {
@@ -49,7 +49,7 @@ contract('Trust', (accounts) => {
 
         it('verifies that it dissolve trust', async () => {
             let entityFactory = await EntityFactory.new();
-            let contract = await SmartLawTrust.new(entityFactory.address, {from: accounts[9]});
+            let contract = await SmartTrustRE.new(entityFactory.address, {from: accounts[9]});
 
             let entity = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[3]});
             let trust = await contract.newTrust('Test Trust', 'Test Property', entity.logs[0].args.entity, {

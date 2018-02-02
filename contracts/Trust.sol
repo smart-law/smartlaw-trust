@@ -5,7 +5,7 @@ import './Owned.sol';
 import './Trusteed.sol';
 import { Beneficiary } from './Beneficiary.sol';
 import { Sale } from './Sale.sol';
-import { SmartLawTrust } from './SmartLawTrust.sol';
+import { SmartTrustRE } from './SmartTrustRE.sol';
 import { Entity } from './Entity.sol';
 import { EntityFactory } from './EntityFactory.sol';
 
@@ -146,7 +146,7 @@ contract Trust is Trusteed {
       private
       constant returns (address)
   {
-      SmartLawTrust smartLaw = SmartLawTrust(trustee);
+      SmartTrustRE smartLaw = SmartTrustRE(trustee);
       EntityFactory entityFactoryInstance = EntityFactory(smartLaw.entityFactory());
       require(entityFactoryInstance.isEntityOwner(msg.sender));
       address _entity = entityFactoryInstance.entityAddress(msg.sender);
@@ -201,7 +201,7 @@ contract Trust is Trusteed {
       public
       notDissolved
   {
-      SmartLawTrust smartLaw = SmartLawTrust(trustee);
+      SmartTrustRE smartLaw = SmartTrustRE(trustee);
       EntityFactory entityFactoryInstance = EntityFactory(smartLaw.entityFactory());
       require(entityFactoryInstance.isEntityOwner(msg.sender));
       require(entityFactoryInstance.isEntity(_beneficiaryEntity));

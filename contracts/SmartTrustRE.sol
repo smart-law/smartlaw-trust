@@ -5,7 +5,7 @@ import { Entity } from './Entity.sol';
 import { Trust } from './Trust.sol';
 import './Owned.sol';
 
-contract SmartLawTrust is Owned {
+contract SmartTrustRE is Owned {
   bool public status; // disable or enable contract
   address public entityFactory;
 
@@ -13,7 +13,7 @@ contract SmartLawTrust is Owned {
 
   event TrustCreated(address trust);
 
-  function SmartLawTrust(address _entityFactory)
+  function SmartTrustRE(address _entityFactory)
       public
       Owned(msg.sender)
   {

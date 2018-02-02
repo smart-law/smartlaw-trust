@@ -1,5 +1,5 @@
 const Trust = artifacts.require('./Trust.sol');
-const SmartLawTrust = artifacts.require('./SmartLawTrust.sol');
+const SmartTrustRE = artifacts.require('./SmartTrustRE.sol');
 const EntityFactory = artifacts.require('./EntityFactory.sol');
 const Beneficiary = artifacts.require('./Beneficiary.sol');
 const utils = require('../helpers/Utils');
@@ -8,7 +8,7 @@ contract('Trust', (accounts) => {
     describe('getBeneficiaryByIndex()', () => {
       it('should return correct beneficiary', async () => {
           let entityFactory = await EntityFactory.new();
-          let contract = await SmartLawTrust.new(entityFactory.address);
+          let contract = await SmartTrustRE.new(entityFactory.address);
 
           let entity = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[1]});
           let entity2 = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[2]});

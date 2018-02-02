@@ -6,7 +6,7 @@ const Beneficiary = artifacts.require("./Beneficiary.sol");
 const Sale = artifacts.require("./Sale.sol");
 const Entity = artifacts.require("./Entity.sol");
 const Trust = artifacts.require("./Trust.sol");
-const SmartLawTrust = artifacts.require("./SmartLawTrust.sol");
+const SmartTrustRE = artifacts.require("./SmartTrustRE.sol");
 const EntityFactory = artifacts.require("./EntityFactory.sol");
 
 module.exports = async (deployer) => {
@@ -15,7 +15,7 @@ module.exports = async (deployer) => {
   await deployer.link(UtilsLib, Beneficiary);
   await deployer.link(UtilsLib, UnderTrust);
   await deployer.link(UtilsLib, Trust);
-  await deployer.link(UtilsLib, SmartLawTrust);
+  await deployer.link(UtilsLib, SmartTrustRE);
   await deployer.deploy(Trusteed);
   await deployer.deploy(UnderTrust);
   await deployer.deploy(Owned);
@@ -24,5 +24,5 @@ module.exports = async (deployer) => {
   await deployer.deploy(Entity);
   await deployer.deploy(Trust);
   await deployer.deploy(EntityFactory);
-  await deployer.deploy(SmartLawTrust, EntityFactory.address);
+  await deployer.deploy(SmartTrustRE, EntityFactory.address);
 };

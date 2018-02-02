@@ -1,14 +1,14 @@
 const EntityFactory = artifacts.require('./EntityFactory.sol');
-const SmartLawTrust = artifacts.require('./SmartLawTrust.sol');
+const SmartTrustRE = artifacts.require('./SmartTrustRE.sol');
 const Entity = artifacts.require('./Entity.sol');
 const Trust = artifacts.require('./Trust.sol');
 const utils = require('../helpers/Utils');
 
-contract('SmartLawTrust', (accounts) => {
+contract('SmartTrustRE', (accounts) => {
     describe('buyTrust()', () => {
         it('verifies that only entity owner can buy trust', async () => {
             let entityFactory = await EntityFactory.new();
-            let contract = await SmartLawTrust.new(entityFactory.address, {from: accounts[9]});
+            let contract = await SmartTrustRE.new(entityFactory.address, {from: accounts[9]});
 
             let entity = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[3]});
             let trust = await contract.newTrust('Test Trust', 'Test Property', entity.logs[0].args.entity, {
@@ -31,7 +31,7 @@ contract('SmartLawTrust', (accounts) => {
 
         it('verifies that only for sale trust can be bought', async () => {
             let entityFactory = await EntityFactory.new();
-            let contract = await SmartLawTrust.new(entityFactory.address, {from: accounts[9]});
+            let contract = await SmartTrustRE.new(entityFactory.address, {from: accounts[9]});
 
             let entity = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[3]});
             let trust = await contract.newTrust('Test Trust', 'Test Property', entity.logs[0].args.entity, {
@@ -49,7 +49,7 @@ contract('SmartLawTrust', (accounts) => {
 
         it('verifies that buying trust failed on amount less than the for sale amount', async () => {
             let entityFactory = await EntityFactory.new();
-            let contract = await SmartLawTrust.new(entityFactory.address, {from: accounts[9]});
+            let contract = await SmartTrustRE.new(entityFactory.address, {from: accounts[9]});
 
             let entity = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[3]});
             let trust = await contract.newTrust('Test Trust', 'Test Property', entity.logs[0].args.entity, {
@@ -73,7 +73,7 @@ contract('SmartLawTrust', (accounts) => {
 
         it('verifies that beneficiary will have the total amount of the trust sold', async () => {
             let entityFactory = await EntityFactory.new();
-            let contract = await SmartLawTrust.new(entityFactory.address, {from: accounts[9]});
+            let contract = await SmartTrustRE.new(entityFactory.address, {from: accounts[9]});
 
             let entity = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[3]});
             let trust = await contract.newTrust('Test Trust', 'Test Property', entity.logs[0].args.entity, {
@@ -96,7 +96,7 @@ contract('SmartLawTrust', (accounts) => {
         it('verifies that beneficiaries will have correct amount when for sale amount of the trust sold was equally divided', async () => {
             let amount = 1000000000000000000;
             let entityFactory = await EntityFactory.new();
-            let contract = await SmartLawTrust.new(entityFactory.address, {from: accounts[9]});
+            let contract = await SmartTrustRE.new(entityFactory.address, {from: accounts[9]});
 
             let entity = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[3]});
             let entity2 = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[4]});
@@ -146,7 +146,7 @@ contract('SmartLawTrust', (accounts) => {
         it('verifies that beneficiaries will have correct amount when for sale amount of the trust sold was equally divided', async () => {
             let amount = 1000000000000000000;
             let entityFactory = await EntityFactory.new();
-            let contract = await SmartLawTrust.new(entityFactory.address, {from: accounts[9]});
+            let contract = await SmartTrustRE.new(entityFactory.address, {from: accounts[9]});
 
             let entity = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[3]});
             let entity2 = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[4]});

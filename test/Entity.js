@@ -1,5 +1,5 @@
 const EntityFactory = artifacts.require('./EntityFactory.sol');
-const SmartLawTrust = artifacts.require('./SmartLawTrust.sol');
+const SmartTrustRE = artifacts.require('./SmartTrustRE.sol');
 const Trust = artifacts.require('./Trust.sol');
 const Entity = artifacts.require('./Entity.sol');
 const utils = require('./helpers/Utils');
@@ -143,7 +143,7 @@ contract('Entity', (accounts) => {
     it('verifies the Entity able to withdraw and funds was set to 0 after', async () => {
         let origBalance = await web3.eth.getBalance(accounts[3]);
         let entityFactory = await EntityFactory.new();
-        let contract = await SmartLawTrust.new(entityFactory.address, {from: accounts[9]});
+        let contract = await SmartTrustRE.new(entityFactory.address, {from: accounts[9]});
         let entity = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[3]});
         let trust = await contract.newTrust('Test Trust', 'Test Property', entity.logs[0].args.entity, {
             from: accounts[9]

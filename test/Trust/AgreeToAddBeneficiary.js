@@ -1,6 +1,6 @@
 const Trust = artifacts.require('./Trust.sol');
 const EntityFactory = artifacts.require('./EntityFactory.sol');
-const SmartLawTrust = artifacts.require('./SmartLawTrust.sol');
+const SmartTrustRE = artifacts.require('./SmartTrustRE.sol');
 const Beneficiary = artifacts.require('./Beneficiary.sol');
 const utils = require('../helpers/Utils');
 
@@ -8,7 +8,7 @@ contract('Trust', (accounts) => {
     describe('agreeToAddBeneficiary()', () => {
       it('verifies that only existing trust beneficiary can sign to add new beneficiary', async () => {
           let entityFactory = await EntityFactory.new();
-          let contract = await SmartLawTrust.new(entityFactory.address);
+          let contract = await SmartTrustRE.new(entityFactory.address);
 
           let entity = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[1]});
           let trust = await contract.newTrust('Test Trust', 'Test Property', entity.logs[0].args.entity, {
@@ -31,7 +31,7 @@ contract('Trust', (accounts) => {
 
       it('should add new signature to pending beneficiary', async () => {
           let entityFactory = await EntityFactory.new();
-          let contract = await SmartLawTrust.new(entityFactory.address);
+          let contract = await SmartTrustRE.new(entityFactory.address);
 
           let entity = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[1]});
           let trust = await contract.newTrust('Test Trust', 'Test Property', entity.logs[0].args.entity, {
@@ -57,7 +57,7 @@ contract('Trust', (accounts) => {
 
       it('should add new beneficiary', async () => {
           let entityFactory = await EntityFactory.new();
-          let contract = await SmartLawTrust.new(entityFactory.address);
+          let contract = await SmartTrustRE.new(entityFactory.address);
 
           let entity = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[1]});
           let trust = await contract.newTrust('Test Trust', 'Test Property', entity.logs[0].args.entity, {
