@@ -88,33 +88,59 @@ contract SmartTrustRE is Owned {
       }
   }
 
-  function buyTrust(address _trust)
-      public
-      payable
+  function senderEntity()
+      private
+      constant returns (address)
   {
       EntityFactory entityFactoryInstance = EntityFactory(entityFactory);
       require(entityFactoryInstance.isEntityOwner(msg.sender));
-      address _entity = entityFactoryInstance.entityAddress(msg.sender);
+      return entityFactoryInstance.entityAddress(msg.sender);
+  }
 
+
+  function splitProceed(address _trust, uint _amount)
+      private
+  {
+      require(msg.value >= _amount);
       TrustRE trust = TrustRE(_trust);
-      require(trust.forSale());
-
-      uint amount = trust.forSaleAmount();
-      require(msg.value >= amount);
       uint beneficiariesCount = trust.beneficiariesCount();
 
-      uint refund = msg.value - amount;
+      uint refund = msg.value - _amount;
       if(refund > 0) {
           msg.sender.transfer(refund);
       }
 
-      uint share = amount / beneficiariesCount;
+      uint share = _amount / beneficiariesCount;
       for(uint i = 0; i < beneficiariesCount; i++) {
           address beneficiary = trust.getBeneficiaryByIndex(i);
           Entity entity = Entity(beneficiary);
           entity.deposit(share);
       }
+  }
+
+  function buyTrust(address _trust)
+      public
+      payable
+  {
+      address _entity = senderEntity();
+      TrustRE trust = TrustRE(_trust);
+      require(trust.forSale());
+      uint amount = trust.forSaleAmount();
+      splitProceed(_trust, amount);
       trust.sold(_entity);
+  }
+
+  function fundLoan(address _trust)
+      public
+      payable
+  {
+      address _entity = senderEntity();
+      TrustRE trust = TrustRE(_trust);
+      require(trust.activeLoan() != 0x0); // should have an activate loan proposal
+      require(!trust.loanFunded()); // loan should not be funded
+      uint amount = trust.loanAmount();
+      splitProceed(_trust, amount);
+      trust.funded(_entity);
   }
 
 }

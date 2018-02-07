@@ -5,6 +5,7 @@ contract LoanableTrust {
 
     address[] loanProposalList;
     address public activeLoan;
+    address public lender; // entity address that funds the loan
 
     event LoanProposalAdded(address loan);
     event LoanCreated(address loan);
@@ -13,6 +14,7 @@ contract LoanableTrust {
         public
     {
         activeLoan = 0x0;
+        lender = 0x0;
     }
 
     modifier noActiveLoan() {
@@ -20,17 +22,51 @@ contract LoanableTrust {
         _;
     }
 
-    function newLoanProposal(address _entity, uint _amount, uint _interest, uint _dueDate)
+    modifier hasActiveLoan() {
+        require(activeLoan != 0x0);
+        _;
+    }
+
+    function loanAmount()
         public
+        constant
+        returns (uint)
+    {
+        if(activeLoan != 0x0) {
+            Loan loan = Loan(activeLoan);
+            return loan.amount();
+        }
+        else {
+            return 0;
+        }
+    }
+
+    function clearLoanProposals()
+        internal
+        hasActiveLoan
+    {
+        address[] memory emptyAddressArray;
+        loanProposalList = emptyAddressArray;
+    }
+
+    function loanFunded()
+        public
+        constant
+        returns (bool)
+    {
+        return ( lender != 0x0 && activeLoan != 0x0 );
+    }
+
+    function newLoan(address _loan)
+        internal
         noActiveLoan
     {
-        Loan loan = new Loan(address(this), _amount, _interest, _dueDate, _entity);
-        loanProposalList.push(loan);
-        LoanProposalAdded(loan);
+        loanProposalList.push(_loan);
+        LoanProposalAdded(_loan);
     }
 
     function setActiveLoan(address _loan)
-        private
+        internal
         noActiveLoan
     {
         activeLoan = _loan;

@@ -6,7 +6,7 @@ contract Trust {
   string public property;
   bool public deleted;
 
-  function Trust() {
+  function Trust() public {
       deleted = false;
   }
 

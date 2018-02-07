@@ -81,6 +81,8 @@ contract TrustRE is Trust, SalableTrust, LoanableTrust, Trusteed {
   function dissolve()
       public
       notDissolved
+      noActiveLoan
+      noActiveSale
   {
       address _entity = validateSender();
       if(UtilsLib.isAddressFound(dissolveSignatures, _entity))
@@ -115,6 +117,16 @@ contract TrustRE is Trust, SalableTrust, LoanableTrust, Trusteed {
       doCancelSale();
   }
 
+  function funded(address _entity)
+      public
+      noActiveLoan
+      notDissolved
+      trusteeOnly(msg.sender)
+  {
+      lender = _entity;
+      clearLoanProposals();
+  }
+
   function validateSender()
       private
       constant returns (address)
@@ -130,6 +142,7 @@ contract TrustRE is Trust, SalableTrust, LoanableTrust, Trusteed {
   function newSaleOffer(uint _amount)
       public
       notDissolved
+      noActiveLoan
   {
       address _entity = validateSender();
       Sale saleOffer = new Sale(address(this), _amount, _entity);
@@ -149,6 +162,7 @@ contract TrustRE is Trust, SalableTrust, LoanableTrust, Trusteed {
   function agreeToSaleOffer(address _sale)
       public
       notDissolved
+      noActiveLoan
   {
       address _entity = validateSender();
       Sale saleOffer = Sale(_sale);
@@ -167,6 +181,8 @@ contract TrustRE is Trust, SalableTrust, LoanableTrust, Trusteed {
   function newBeneficiary(address _beneficiaryEntity)
       public
       notDissolved
+      noActiveLoan
+      noActiveSale
   {
       SmartTrustRE smartLaw = SmartTrustRE(trustee);
       EntityFactory entityFactoryInstance = EntityFactory(smartLaw.entityFactory());
@@ -192,6 +208,8 @@ contract TrustRE is Trust, SalableTrust, LoanableTrust, Trusteed {
   function agreeToAddBeneficiary(address _beneficiary)
       public
       notDissolved
+      noActiveLoan
+      noActiveSale
   {
       address _entity = validateSender();
       Beneficiary pendingBeneficiary = Beneficiary(_beneficiary);
@@ -210,4 +228,50 @@ contract TrustRE is Trust, SalableTrust, LoanableTrust, Trusteed {
   {
       return dissolveSignatures;
   }
+
+  function newLoanProposal(uint _amount, uint _interest, uint _dueDate)
+      public
+      notDissolved
+      noActiveSale
+  {
+      address _entity = validateSender();
+      Loan loanProposal = new Loan(address(this), _amount, _interest, _dueDate, _entity);
+      if(beneficiaries.length > 1) {
+          newLoan(loanProposal);
+      }
+      else {
+          setActiveLoan(loanProposal);
+          loanProposal.deactivate();
+      }
+  }
+
+  /**
+   * @dev allow beneficiaries to agree to any loan proposals
+   * @param  _loan loan address of the loan proposal
+   */
+  function agreeToLoanProposal(address _loan)
+      public
+      notDissolved
+      noActiveSale
+  {
+      address _entity = validateSender();
+      Loan loanProposal = Loan(_loan);
+      loanProposal.sign(_entity);
+      if(beneficiaries.length == loanProposal.countSignatures())
+      {
+          setActiveLoan(loanProposal);
+          loanProposal.deactivate();
+      }
+  }
+
+  function loanDue()
+      public
+      notDissolved
+      hasActiveLoan
+  {
+      Loan loan = Loan(activeLoan);
+      loan.deactivate();
+      activeLoan = 0x0;
+  }
+
 }

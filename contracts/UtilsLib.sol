@@ -4,6 +4,7 @@ library UtilsLib {
 
     function isAddressFound(address[] _source, address _address)
         public
+        pure
         returns (bool)
     {
         for (uint i = 0; i < _source.length; i++) {
