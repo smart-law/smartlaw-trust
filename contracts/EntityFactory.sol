@@ -30,7 +30,7 @@ contract EntityFactory is Owned {
   function entityOwner(address _entity)
       public
       entityExist(_entity)
-      constant
+      view
       returns(address)
   {
       return entityOwners[_entity];
@@ -38,7 +38,7 @@ contract EntityFactory is Owned {
 
   function entityAddresses()
       public
-      constant
+      view
       returns(address[])
   {
       return entities;
@@ -46,21 +46,21 @@ contract EntityFactory is Owned {
 
   function isEntity(address _address)
       public
-      constant returns (bool)
+      view returns (bool)
   {
       return addressesOfEntities[_address];
   }
 
   function isEntityOwner(address _address)
       public
-      constant returns (bool)
+      view returns (bool)
   {
       return ownersEntity[_address] != 0x0;
   }
 
   function entityAddress(address _owner)
       public
-      constant returns (address)
+      view returns (address)
   {
       return ownersEntity[_owner];
   }

@@ -103,7 +103,7 @@ contract Entity is Trusteed {
     function availableFunds()
         public
         validateSender
-        constant returns(uint)
+        view returns(uint)
     {
         return funds;
     }

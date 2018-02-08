@@ -36,7 +36,7 @@ contract SmartTrustRE is Owned {
   function trustAddresses()
       public
       lawActive
-      constant returns(address[])
+      view returns(address[])
   {
       return trusts;
   }
@@ -90,7 +90,7 @@ contract SmartTrustRE is Owned {
 
   function senderEntity()
       private
-      constant returns (address)
+      view returns (address)
   {
       EntityFactory entityFactoryInstance = EntityFactory(entityFactory);
       require(entityFactoryInstance.isEntityOwner(msg.sender));
@@ -141,6 +141,24 @@ contract SmartTrustRE is Owned {
       uint amount = trust.loanAmount();
       splitProceed(_trust, amount);
       trust.funded(_entity);
+  }
+
+  function payLoan(address _trust)
+      public
+      payable
+  {
+      TrustRE trust = TrustRE(_trust);
+      require(trust.activeLoan() != 0x0); // should have an activate loan proposal
+      require(trust.loanFunded()); // loan should be funded
+      uint amountDue = trust.loanAmountDue();
+      require(msg.value >= amountDue);
+      uint refund = msg.value - amountDue;
+      if(refund > 0) {
+          msg.sender.transfer(refund);
+      }
+      Entity entity = Entity(trust.lender());
+      entity.deposit(msg.value);
+      trust.loanPaid();
   }
 
 }

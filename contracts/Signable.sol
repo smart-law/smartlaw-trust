@@ -44,14 +44,14 @@ contract Signable {
 
     function getSignatures()
         public
-        constant returns (address[])
+        view returns (address[])
     {
         return signatures;
     }
 
     function countSignatures()
         public
-        constant returns (uint)
+        view returns (uint)
     {
         return signatures.length;
     }

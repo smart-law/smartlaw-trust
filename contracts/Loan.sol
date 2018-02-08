@@ -4,6 +4,7 @@ import './Signable.sol';
 contract Loan is Signable {
 
   uint public amount; // wei
+  uint public amountDue;
   uint public interest;
   uint public dueDate;
   uint public startDate;
@@ -14,16 +15,16 @@ contract Loan is Signable {
   {
       startDate = now;
       amount = _amount;
-      interest = _interest;
+      interest = _interest; // multiplied by 100 already
       dueDate = now + (secondsBeforeDue * 1 seconds);
       signatures.push(_signature);
+      amountDue = amount + ((amount * interest) / 10000);
   }
 
   function isDue()
       public
       enabledOnly
-      view
-      returns (bool)
+      view returns (bool)
   {
       return now >= dueDate;
   }

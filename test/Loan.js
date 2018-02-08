@@ -1,5 +1,5 @@
 const Loan = artifacts.require('./Loan.sol');
-const SECONDS_PER_DAY = 86400;
+const utils = require('./helpers/Utils');
 
 contract('Loan', (accounts) => {
     it('verifies the loan after construction', async () => {
@@ -7,7 +7,7 @@ contract('Loan', (accounts) => {
             accounts[1],
             1000000000000000000,
             5,
-            5 * SECONDS_PER_DAY,
+            5 * utils.SECONDS_PER_DAY,
             accounts[2]
         );
         let trust = await contract.trust.call();
@@ -25,14 +25,43 @@ contract('Loan', (accounts) => {
             accounts[1],
             1000000000000000000,
             5,
-            3 * SECONDS_PER_DAY,
+            3 * utils.SECONDS_PER_DAY,
             accounts[2]
         );
         let isDue = await contract.isDue.call();
         assert.equal(isDue, false);
-        await contract.makeOverDue(2 * SECONDS_PER_DAY);
+        await contract.makeOverDue(2 * utils.SECONDS_PER_DAY);
         isDue = await contract.isDue.call();
         assert.equal(isDue, false);
+    });
+
+    it('verifies that loan amount due is correct', async () => {
+        let data = [
+          {
+            loanAmount: 1000000000000000000,
+            interest: 5
+          },
+          {
+            loanAmount: 500000000000000000,
+            interest: 2.5
+          },
+          {
+            loanAmount: 700000000000000000,
+            interest: 0.5
+          }
+        ];
+
+        for(let i=0; i<data.length; i++){
+          let contract = await Loan.new(
+              accounts[1],
+              data[i].loanAmount,
+              data[i].interest * 100,
+              3 * utils.SECONDS_PER_DAY,
+              accounts[2]
+          );
+          let amountDue = await contract.amountDue.call();
+          assert.equal(Number(amountDue), data[i].loanAmount + (data[i].loanAmount * ((data[i].interest * 100)/10000)));
+        }
     });
 
 });

@@ -41,7 +41,7 @@ contract TrustRE is Trust, SalableTrust, LoanableTrust, Trusteed {
   function isBeneficiary(address _address)
       public
       notDissolved
-      constant returns (bool)
+      view returns (bool)
   {
       return UtilsLib.isAddressFound(beneficiaries, _address);
   }
@@ -49,7 +49,7 @@ contract TrustRE is Trust, SalableTrust, LoanableTrust, Trusteed {
   function beneficiariesSignatures()
       public
       notDissolved
-      constant returns (address[])
+      view returns (address[])
   {
       return beneficiaries;
   }
@@ -57,7 +57,7 @@ contract TrustRE is Trust, SalableTrust, LoanableTrust, Trusteed {
   function getBeneficiaryByIndex(uint index)
       public
       notDissolved
-      constant returns (address)
+      view returns (address)
   {
       return beneficiaries[index];
   }
@@ -65,7 +65,7 @@ contract TrustRE is Trust, SalableTrust, LoanableTrust, Trusteed {
   function beneficiariesCount()
       public
       notDissolved
-      constant returns (uint)
+      view returns (uint)
   {
       return beneficiaries.length;
   }
@@ -73,7 +73,7 @@ contract TrustRE is Trust, SalableTrust, LoanableTrust, Trusteed {
   function getPendingBeneficiaries()
       public
       notDissolved
-      constant returns (address[])
+      view returns (address[])
   {
       return pendingBeneficiaries;
   }
@@ -117,19 +117,9 @@ contract TrustRE is Trust, SalableTrust, LoanableTrust, Trusteed {
       doCancelSale();
   }
 
-  function funded(address _entity)
-      public
-      noActiveLoan
-      notDissolved
-      trusteeOnly(msg.sender)
-  {
-      lender = _entity;
-      clearLoanProposals();
-  }
-
   function validateSender()
       private
-      constant returns (address)
+      view returns (address)
   {
       SmartTrustRE smartLaw = SmartTrustRE(trustee);
       EntityFactory entityFactoryInstance = EntityFactory(smartLaw.entityFactory());
@@ -224,18 +214,18 @@ contract TrustRE is Trust, SalableTrust, LoanableTrust, Trusteed {
   function getDissolveSignatures()
       public
       notDissolved
-      constant returns (address[])
+      view returns (address[])
   {
       return dissolveSignatures;
   }
 
-  function newLoanProposal(uint _amount, uint _interest, uint _dueDate)
+  function newLoanProposal(uint _amount, uint _interest, uint _secondsBeforeDue)
       public
       notDissolved
       noActiveSale
   {
       address _entity = validateSender();
-      Loan loanProposal = new Loan(address(this), _amount, _interest, _dueDate, _entity);
+      Loan loanProposal = new Loan(address(this), _amount, _interest, _secondsBeforeDue, _entity);
       if(beneficiaries.length > 1) {
           newLoan(loanProposal);
       }
@@ -270,8 +260,31 @@ contract TrustRE is Trust, SalableTrust, LoanableTrust, Trusteed {
       hasActiveLoan
   {
       Loan loan = Loan(activeLoan);
+      require(loan.isDue());
       loan.deactivate();
       activeLoan = 0x0;
+  }
+
+  function funded(address _entity)
+      public
+      hasActiveLoan
+      notDissolved
+      trusteeOnly(msg.sender)
+  {
+      lender = _entity;
+      clearLoanProposals();
+  }
+
+  function loanPaid()
+      public
+      hasActiveLoan
+      notDissolved
+      trusteeOnly(msg.sender)
+  {
+      Loan loan = Loan(activeLoan);
+      loan.deactivate();
+      activeLoan = 0x0;
+      lender = 0x0;
   }
 
 }

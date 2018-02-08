@@ -11,5 +11,6 @@ function ensureException(error) {
 module.exports = {
     zeroAddress: '0x0000000000000000000000000000000000000000',
     isException: isException,
-    ensureException: ensureException
+    ensureException: ensureException,
+    SECONDS_PER_DAY: 86400
 };

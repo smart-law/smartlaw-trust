@@ -27,7 +27,7 @@ contract SalableTrust {
 
     function forSale()
         public
-        constant
+        view
         returns (bool)
     {
         return activeSale != 0x0;
@@ -35,7 +35,7 @@ contract SalableTrust {
 
     function forSaleAmount()
         public
-        constant
+        view
         returns (uint)
     {
         if(forSale()) {
@@ -67,7 +67,7 @@ contract SalableTrust {
 
     function saleProposals()
         public
-        constant returns (address[])
+        view returns (address[])
     {
         return saleProposalList;
     }

@@ -29,12 +29,26 @@ contract LoanableTrust {
 
     function loanAmount()
         public
-        constant
+        view
         returns (uint)
     {
         if(activeLoan != 0x0) {
             Loan loan = Loan(activeLoan);
             return loan.amount();
+        }
+        else {
+            return 0;
+        }
+    }
+
+    function loanAmountDue()
+        public
+        view
+        returns (uint)
+    {
+        if(activeLoan != 0x0) {
+            Loan loan = Loan(activeLoan);
+            return loan.amountDue();
         }
         else {
             return 0;
@@ -51,7 +65,7 @@ contract LoanableTrust {
 
     function loanFunded()
         public
-        constant
+        view
         returns (bool)
     {
         return ( lender != 0x0 && activeLoan != 0x0 );
@@ -77,7 +91,7 @@ contract LoanableTrust {
 
     function loanProposals()
         public
-        constant returns (address[])
+        view returns (address[])
     {
         return loanProposalList;
     }
