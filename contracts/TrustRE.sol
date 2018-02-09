@@ -7,6 +7,7 @@ import './Trusteed.sol';
 import { Beneficiary } from './Beneficiary.sol';
 import { Sale } from './Sale.sol';
 import { Loan } from './Loan.sol';
+import { Bid } from './Bid.sol';
 import { SmartTrustRE } from './SmartTrustRE.sol';
 import { Entity } from './Entity.sol';
 import { EntityFactory } from './EntityFactory.sol';
@@ -14,8 +15,9 @@ import { EntityFactory } from './EntityFactory.sol';
 import './Trust.sol';
 import './LoanableTrust.sol';
 import './SalableTrust.sol';
+import './AuctionableTrust.sol';
 
-contract TrustRE is Trust, SalableTrust, LoanableTrust, Trusteed {
+contract TrustRE is Trust, SalableTrust, LoanableTrust, AuctionableTrust, Trusteed {
 
   address[] beneficiaries;
   address[] pendingBeneficiaries;
@@ -108,11 +110,7 @@ contract TrustRE is Trust, SalableTrust, LoanableTrust, Trusteed {
       public
       trusteeOnly(msg.sender)
   {
-      address[] memory emptyAddressArray;
-      beneficiaries = emptyAddressArray;
-      pendingBeneficiaries = emptyAddressArray;
-      dissolveSignatures = emptyAddressArray;
-      beneficiaries.push(_entity);
+      resetBeneficiary(_entity);
       wasRestored();
       doCancelSale();
   }
@@ -263,6 +261,30 @@ contract TrustRE is Trust, SalableTrust, LoanableTrust, Trusteed {
       require(loan.isDue());
       loan.deactivate();
       activeLoan = 0x0;
+      runAuction();
+  }
+
+  function auctionEnd()
+      public
+      notDissolved
+      noActiveLoan
+      noActiveSale
+      onAuction
+  {
+      require(now >= auctionEndDate);
+      Bid bid = Bid(highestBid);
+      resetBeneficiary(bid.owner());
+      stopAuction();
+  }
+
+  function resetBeneficiary(address _entity)
+      internal
+  {
+      address[] memory emptyAddressArray;
+      beneficiaries = emptyAddressArray;
+      pendingBeneficiaries = emptyAddressArray;
+      dissolveSignatures = emptyAddressArray;
+      beneficiaries.push(_entity);
   }
 
   function funded(address _entity)
@@ -285,6 +307,15 @@ contract TrustRE is Trust, SalableTrust, LoanableTrust, Trusteed {
       loan.deactivate();
       activeLoan = 0x0;
       lender = 0x0;
+  }
+
+  function newBid()
+      public
+      onAuction
+      payable
+  {
+      address _entity = validateSender();
+      placeBid(_entity, msg.value);
   }
 
 }
