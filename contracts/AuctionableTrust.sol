@@ -5,10 +5,8 @@ contract AuctionableTrust {
 
     uint public auctionEndDate;
     address public highestBid;
-    address[] bids;
+    address[] bidsList;
     bool public auctionRunning;
-
-    event BidCreated(address bid);
 
     modifier onAuction()
     {
@@ -45,21 +43,20 @@ contract AuctionableTrust {
         auctionRunning = false;
     }
 
-    function placeBid(address _entity, uint _amount)
-        internal
+    function bids()
+        public
+        view returns(address[])
     {
-        Bid bid = new Bid(_entity, _amount);
-        bids.push(bid);
-        if(highestBid == 0x0) {
-            highestBid = bid;
-        } else {
-            Bid currentHighestBid = Bid(highestBid);
-            require(msg.value > currentHighestBid.amount());
-            highestBid = bid;
-        }
-        BidCreated(bid);
+        return bidsList;
     }
 
-
+    /**
+     * should be removed for the purpose of testing
+     */
+    function makeAuctionEnd()
+        public
+    {
+        auctionEndDate = 0;
+    }
 
 }

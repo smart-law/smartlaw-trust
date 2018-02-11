@@ -116,7 +116,7 @@ contract('SmartTrustRE', (accounts) => {
             assert.equal(Number(funds), Number(loanAmountDue));
         });
 
-        it('verifies that active loand and lender was reset', async () => {
+        it('verifies that active loan and lender was reset', async () => {
             let entityFactory = await EntityFactory.new();
             let contract = await SmartTrustRE.new(entityFactory.address, {from: accounts[9]});
 

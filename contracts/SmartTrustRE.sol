@@ -3,6 +3,7 @@ pragma solidity ^0.4.15;
 import { EntityFactory } from './EntityFactory.sol';
 import { Entity } from './Entity.sol';
 import { TrustRE } from './TrustRE.sol';
+import { Bid } from './Bid.sol';
 import './Owned.sol';
 
 contract SmartTrustRE is Owned {
@@ -12,6 +13,7 @@ contract SmartTrustRE is Owned {
   address[] public trusts;
 
   event TrustCreated(address trust);
+  event BidCreated(address trust, address bid);
 
   function SmartTrustRE(address _entityFactory)
       public
@@ -97,7 +99,6 @@ contract SmartTrustRE is Owned {
       return entityFactoryInstance.entityAddress(msg.sender);
   }
 
-
   function splitProceed(address _trust, uint _amount)
       private
   {
@@ -159,6 +160,28 @@ contract SmartTrustRE is Owned {
       Entity entity = Entity(trust.lender());
       entity.deposit(msg.value);
       trust.loanPaid();
+  }
+
+  function placeBid(address _trust)
+      public
+      payable
+  {
+      address _entity = senderEntity();
+      TrustRE trust = TrustRE(_trust);
+      require(trust.auctionRunning());
+      Bid bid = new Bid(_entity, msg.value);
+      address _highestBid = trust.highestBid();
+      if(_highestBid == 0x0) {
+          trust.setHighestBid(bid);
+      } else {
+          Bid currentHighestBid = Bid(_highestBid);
+          require(msg.value > currentHighestBid.amount());
+          Entity entity = Entity(currentHighestBid.owner());
+          entity.deposit(currentHighestBid.amount());
+          trust.setHighestBid(bid);
+      }
+      trust.newBid(bid);
+      BidCreated(_trust, bid);
   }
 
 }

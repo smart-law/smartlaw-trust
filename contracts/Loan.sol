@@ -23,7 +23,7 @@ contract Loan is Signable {
 
   function isDue()
       public
-      enabledOnly
+      //enabledOnly
       view returns (bool)
   {
       return now >= dueDate;
@@ -32,10 +32,10 @@ contract Loan is Signable {
   /**
    * should be removed for the purpose of testing
    */
-  function makeOverDue(uint secondsToAdd)
+  function makeOverDue()
       public
   {
-      dueDate = dueDate - (secondsToAdd * 1 seconds);
+      dueDate = 0;
   }
 
 }

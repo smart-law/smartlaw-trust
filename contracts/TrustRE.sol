@@ -272,8 +272,12 @@ contract TrustRE is Trust, SalableTrust, LoanableTrust, AuctionableTrust, Truste
       onAuction
   {
       require(now >= auctionEndDate);
-      Bid bid = Bid(highestBid);
-      resetBeneficiary(bid.owner());
+      address _newOwner = lender;
+      if(highestBid != 0x0) {
+        Bid bid = Bid(highestBid);
+        _newOwner = bid.owner();
+      }
+      resetBeneficiary(_newOwner);
       stopAuction();
   }
 
@@ -309,13 +313,22 @@ contract TrustRE is Trust, SalableTrust, LoanableTrust, AuctionableTrust, Truste
       lender = 0x0;
   }
 
-  function newBid()
+  function setHighestBid(address _bid)
       public
+      notDissolved
       onAuction
-      payable
+      trusteeOnly(msg.sender)
   {
-      address _entity = validateSender();
-      placeBid(_entity, msg.value);
+      highestBid = _bid;
+  }
+
+  function newBid(address _bid)
+      public
+      notDissolved
+      onAuction
+      trusteeOnly(msg.sender)
+  {
+      bidsList.push(_bid);
   }
 
 }

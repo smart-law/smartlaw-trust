@@ -30,9 +30,6 @@ contract('Loan', (accounts) => {
         );
         let isDue = await contract.isDue.call();
         assert.equal(isDue, false);
-        await contract.makeOverDue(2 * utils.SECONDS_PER_DAY);
-        isDue = await contract.isDue.call();
-        assert.equal(isDue, false);
     });
 
     it('verifies that loan amount due is correct', async () => {
