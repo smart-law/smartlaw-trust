@@ -2,9 +2,8 @@ const TrustRE = artifacts.require('./TrustRE.sol');
 const EntityFactory = artifacts.require('./EntityFactory.sol');
 const SmartTrustRE = artifacts.require('./SmartTrustRE.sol');
 const Loan = artifacts.require('./Loan.sol');
+const Entity = artifacts.require('./Entity.sol');
 const utils = require('../helpers/Utils');
-const Web3 = require('web3');
-let web3 = new Web3(Web3.givenProvider || "ws://localhost:8546");
 
 contract('SmartTrustRE', (accounts) => {
     let loanData = {
@@ -164,6 +163,35 @@ contract('SmartTrustRE', (accounts) => {
             bid = await contract.placeBid(trustContract.address, {from: accounts[4], value: loanData.amount + (loanData.amount/2)});
             highestBid = await trustContract.highestBid.call();
             assert.equal(highestBid, bid.logs[0].args.bid);
+        });
+
+        it('verifies the amount was deposited to the entity once outbid', async () => {
+            let entityFactory = await EntityFactory.new();
+            let contract = await SmartTrustRE.new(entityFactory.address, {from: accounts[9]});
+
+            let entity = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[3]});
+            let trust = await contract.newTrust('Test Trust', 'Test Property', entity.logs[0].args.entity, {
+                from: accounts[9]
+            });
+            let bidder = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[4]});
+            let highBidder = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[5]});
+            let trustContract = await TrustRE.at(trust.logs[0].args.trust);
+            let loan = await trustContract.newLoanProposal(
+              loanData.amount,
+              loanData.interest,
+              loanData.due,
+              {from: accounts[3]}
+            );
+            let loanContract = await Loan.at(loan.logs[0].args.loan);
+            await loanContract.makeOverDue();
+            await trustContract.loanDue();
+            let bid = await contract.placeBid(trustContract.address, {from: accounts[4], value: loanData.amount + (loanData.amount/4)});
+            let lowBidderEntity = await Entity.at(bidder.logs[0].args.entity);
+            let funds = await lowBidderEntity.availableFunds({from: accounts[4]});
+            assert.equal(Number(funds), 0);
+            bid = await contract.placeBid(trustContract.address, {from: accounts[5], value: loanData.amount + (loanData.amount/2)});
+            funds = await lowBidderEntity.availableFunds({from: accounts[4]});
+            assert.equal(Number(funds), loanData.amount + (loanData.amount/4));
         });
 
     });
