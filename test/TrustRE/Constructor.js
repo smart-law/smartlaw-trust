@@ -1,10 +1,10 @@
-const TrustRE = artifacts.require('./TrustRE.sol');
-const utils = require('../helpers/Utils');
+const TrustRE = artifacts.require('TrustRE');
+const utils = require('../Utils');
 
 contract('TrustRE', (accounts) => {
     describe('TrustRE()', () => {
         it('verifies the trust after construction', async () => {
-          let contract = await TrustRE.new('Test Trust', 'Test Property', accounts[1]);
+          let contract = await TrustRE.new(accounts[0], 'Test Trust', 'Test Property', accounts[1]);
           let trustee = await contract.trustee.call();
           assert.equal(trustee, accounts[0]);
           let name = await contract.name.call();

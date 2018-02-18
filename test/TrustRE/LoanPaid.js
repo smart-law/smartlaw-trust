@@ -1,8 +1,9 @@
-const TrustRE = artifacts.require('./TrustRE.sol');
-const EntityFactory = artifacts.require('./EntityFactory.sol');
-const SmartTrustRE = artifacts.require('./SmartTrustRE.sol');
-const Loan = artifacts.require('./Loan.sol');
-const utils = require('../helpers/Utils');
+const TrustRE = artifacts.require('TrustRE');
+const EntityFactory = artifacts.require('EntityFactory');
+const TrusteeFactory = artifacts.require('TrusteeFactory');
+const DexRE = artifacts.require('DexRE');
+const Loan = artifacts.require('Loan');
+const utils = require('../Utils');
 
 contract('TrustRE', (accounts) => {
     let loanData = {
@@ -12,8 +13,8 @@ contract('TrustRE', (accounts) => {
     };
 
     describe('loanPaid()', () => {
-        it('verifies that only trustee can initiate loanPaid', async () => {
-            let contract = await TrustRE.new('Test Trust', 'Test Property', accounts[0], {from: accounts[9]});
+        it('verifies that only DexRE can initiate loanPaid', async () => {
+            let contract = await TrustRE.new(accounts[9], 'Test Trust', 'Test Property', accounts[0], {from: accounts[9]});
 
             try {
                 await contract.loanPaid({from: accounts[2]});
@@ -24,7 +25,7 @@ contract('TrustRE', (accounts) => {
             }
         });
         it('verifies that only trust with active loan can be paid', async () => {
-            let contract = await TrustRE.new('Test Trust', 'Test Property', accounts[0], {from: accounts[9]});
+            let contract = await TrustRE.new(accounts[9], 'Test Trust', 'Test Property', accounts[0], {from: accounts[9]});
 
             try {
                 await contract.loanPaid({from: accounts[9]});

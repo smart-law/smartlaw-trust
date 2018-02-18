@@ -1,4 +1,4 @@
-pragma solidity ^0.4.15;
+pragma solidity ^0.4.4;
 import './Signable.sol';
 
 contract Loan is Signable {
@@ -23,7 +23,6 @@ contract Loan is Signable {
 
   function isDue()
       public
-      //enabledOnly
       view returns (bool)
   {
       return now >= dueDate;

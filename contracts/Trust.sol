@@ -1,30 +1,30 @@
-pragma solidity ^0.4.15;
+pragma solidity ^0.4.4;
 
 contract Trust {
 
-  string public name;
-  string public property;
-  bool public deleted;
+    string public name;
+    string public property;
+    bool public deleted;
 
-  function Trust() public {
-      deleted = false;
-  }
+    function Trust() public {
+        deleted = false;
+    }
 
-  modifier notDissolved() {
-      require(deleted == false);
-      _;
-  }
+    modifier notDissolved() {
+        require(deleted == false);
+        _;
+    }
 
-  function wasRestored()
-      internal
-  {
-      deleted = false;
-  }
+    function wasRestored()
+        internal
+    {
+        deleted = false;
+    }
 
-  function wasDissolved()
-      internal
-  {
-      deleted = true;
-  }
+    function wasDissolved()
+        internal
+    {
+        deleted = true;
+    }
 
 }

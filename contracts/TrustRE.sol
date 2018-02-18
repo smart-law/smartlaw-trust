@@ -1,4 +1,4 @@
-pragma solidity ^0.4.15;
+pragma solidity ^0.4.4;
 
 import './UtilsLib.sol';
 import './Owned.sol';
@@ -8,7 +8,7 @@ import { Beneficiary } from './Beneficiary.sol';
 import { Sale } from './Sale.sol';
 import { Loan } from './Loan.sol';
 import { Bid } from './Bid.sol';
-import { SmartTrustRE } from './SmartTrustRE.sol';
+import { DexRE } from './DexRE.sol';
 import { Entity } from './Entity.sol';
 import { EntityFactory } from './EntityFactory.sol';
 
@@ -23,20 +23,28 @@ contract TrustRE is Trust, SalableTrust, LoanableTrust, AuctionableTrust, Truste
   address[] pendingBeneficiaries;
   address[] dissolveSignatures;
 
+  address public DexREAdmin;
+
   event PendingBeneficiaryAdded(address beneficiary);
   event BeneficiaryAdded(address entity);
 
-  function TrustRE(string _name, string _property, address _beneficiary)
+  function TrustRE(address _trustee, string _name, string _property, address _beneficiary)
       public
-      Trusteed(msg.sender)
+      Trusteed(_trustee)
   {
       name = _name;
       property = _property;
       beneficiaries.push(_beneficiary);
+      DexREAdmin = msg.sender;
   }
 
   modifier beneficiary(address _address) {
       require(isBeneficiary(_address));
+      _;
+  }
+
+  modifier adminOnly(address _address) {
+      require(_address == DexREAdmin);
       _;
   }
 
@@ -108,7 +116,7 @@ contract TrustRE is Trust, SalableTrust, LoanableTrust, AuctionableTrust, Truste
 
   function sold(address _entity)
       public
-      trusteeOnly(msg.sender)
+      adminOnly(msg.sender)
   {
       resetBeneficiary(_entity);
       wasRestored();
@@ -119,8 +127,8 @@ contract TrustRE is Trust, SalableTrust, LoanableTrust, AuctionableTrust, Truste
       private
       view returns (address)
   {
-      SmartTrustRE smartLaw = SmartTrustRE(trustee);
-      EntityFactory entityFactoryInstance = EntityFactory(smartLaw.entityFactory());
+      DexRE dexRE = DexRE(DexREAdmin);
+      EntityFactory entityFactoryInstance = EntityFactory(dexRE.entityFactory());
       require(entityFactoryInstance.isEntityOwner(msg.sender));
       address _entity = entityFactoryInstance.entityAddress(msg.sender);
       require(isBeneficiary(_entity));
@@ -172,8 +180,8 @@ contract TrustRE is Trust, SalableTrust, LoanableTrust, AuctionableTrust, Truste
       noActiveLoan
       noActiveSale
   {
-      SmartTrustRE smartLaw = SmartTrustRE(trustee);
-      EntityFactory entityFactoryInstance = EntityFactory(smartLaw.entityFactory());
+      DexRE dexRE = DexRE(DexREAdmin);
+      EntityFactory entityFactoryInstance = EntityFactory(dexRE.entityFactory());
       require(entityFactoryInstance.isEntityOwner(msg.sender));
       require(entityFactoryInstance.isEntity(_beneficiaryEntity));
       address _entity = entityFactoryInstance.entityAddress(msg.sender);
@@ -295,7 +303,7 @@ contract TrustRE is Trust, SalableTrust, LoanableTrust, AuctionableTrust, Truste
       public
       hasActiveLoan
       notDissolved
-      trusteeOnly(msg.sender)
+      adminOnly(msg.sender)
   {
       lender = _entity;
       clearLoanProposals();
@@ -305,7 +313,7 @@ contract TrustRE is Trust, SalableTrust, LoanableTrust, AuctionableTrust, Truste
       public
       hasActiveLoan
       notDissolved
-      trusteeOnly(msg.sender)
+      adminOnly(msg.sender)
   {
       Loan loan = Loan(activeLoan);
       loan.deactivate();
@@ -317,7 +325,7 @@ contract TrustRE is Trust, SalableTrust, LoanableTrust, AuctionableTrust, Truste
       public
       notDissolved
       onAuction
-      trusteeOnly(msg.sender)
+      adminOnly(msg.sender)
   {
       highestBid = _bid;
   }
@@ -326,7 +334,7 @@ contract TrustRE is Trust, SalableTrust, LoanableTrust, AuctionableTrust, Truste
       public
       notDissolved
       onAuction
-      trusteeOnly(msg.sender)
+      adminOnly(msg.sender)
   {
       bidsList.push(_bid);
   }
