@@ -1,10 +1,11 @@
-const EntityFactory = artifacts.require('./EntityFactory.sol');
-const SmartTrustRE = artifacts.require('./SmartTrustRE.sol');
-const Entity = artifacts.require('./Entity.sol');
-const TrustRE = artifacts.require('./TrustRE.sol');
-const utils = require('../helpers/Utils');
+const EntityFactory = artifacts.require('EntityFactory');
+const TrusteeFactory = artifacts.require('TrusteeFactory');
+const DexRE = artifacts.require('DexRE');
+const Entity = artifacts.require('Entity');
+const TrustRE = artifacts.require('TrustRE');
+const utils = require('../Utils');
 
-contract('SmartTrustRE', (accounts) => {
+contract('DexRE', (accounts) => {
     let loanData = {
         amount: 1000000000000000000,
         interest: 5 * 100,
@@ -14,11 +15,15 @@ contract('SmartTrustRE', (accounts) => {
     describe('fundLoan()', () => {
         it('verifies that only entity owner can fund a loan', async () => {
             let entityFactory = await EntityFactory.new();
-            let contract = await SmartTrustRE.new(entityFactory.address, {from: accounts[9]});
+            let trusteeFactory = await TrusteeFactory.new();
+            let contract = await DexRE.new(entityFactory.address, trusteeFactory.address);
+            await entityFactory.setDexRE(contract.address);
+            await trusteeFactory.setDexRE(contract.address);
+            let trustee = await trusteeFactory.newTrustee('Test Trustee', {from: accounts[2]});
 
-            let entity = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[3]});
-            let lender = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[4]});
-            let trust = await contract.newTrust('Test Trust', 'Test Property', entity.logs[0].args.entity, {
+            let entity = await entityFactory.newEntity(1, true, 'PH', {from: accounts[3]});
+            let lender = await entityFactory.newEntity(1, true, 'PH', {from: accounts[4]});
+            let trust = await contract.newTrust(trustee.logs[0].args.trustee, 'Test Trust', 'Test Property', entity.logs[0].args.entity, {
                 from: accounts[9]
             });
             let trustContract = await TrustRE.at(trust.logs[0].args.trust);
@@ -46,13 +51,17 @@ contract('SmartTrustRE', (accounts) => {
 
         it('verifies that only trust with active loan can be funded', async () => {
             let entityFactory = await EntityFactory.new();
-            let contract = await SmartTrustRE.new(entityFactory.address, {from: accounts[9]});
+            let trusteeFactory = await TrusteeFactory.new();
+            let contract = await DexRE.new(entityFactory.address, trusteeFactory.address);
+            await entityFactory.setDexRE(contract.address);
+            await trusteeFactory.setDexRE(contract.address);
+            let trustee = await trusteeFactory.newTrustee('Test Trustee', {from: accounts[2]});
 
-            let entity = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[3]});
-            let trust = await contract.newTrust('Test Trust', 'Test Property', entity.logs[0].args.entity, {
+            let entity = await entityFactory.newEntity(1, true, 'PH', {from: accounts[3]});
+            let trust = await contract.newTrust(trustee.logs[0].args.trustee, 'Test Trust', 'Test Property', entity.logs[0].args.entity, {
                 from: accounts[9]
             });
-            let buyer = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[4]});
+            let buyer = await entityFactory.newEntity(1, true, 'PH', {from: accounts[4]});
             try {
                 await contract.fundLoan(
                   trust.logs[0].args.trust,
@@ -70,13 +79,17 @@ contract('SmartTrustRE', (accounts) => {
 
         it('verifies that funding trust loan failed on amount less than the loan amount', async () => {
             let entityFactory = await EntityFactory.new();
-            let contract = await SmartTrustRE.new(entityFactory.address, {from: accounts[9]});
+            let trusteeFactory = await TrusteeFactory.new();
+            let contract = await DexRE.new(entityFactory.address, trusteeFactory.address);
+            await entityFactory.setDexRE(contract.address);
+            await trusteeFactory.setDexRE(contract.address);
+            let trustee = await trusteeFactory.newTrustee('Test Trustee', {from: accounts[2]});
 
-            let entity = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[3]});
-            let trust = await contract.newTrust('Test Trust', 'Test Property', entity.logs[0].args.entity, {
+            let entity = await entityFactory.newEntity(1, true, 'PH', {from: accounts[3]});
+            let trust = await contract.newTrust(trustee.logs[0].args.trustee, 'Test Trust', 'Test Property', entity.logs[0].args.entity, {
                 from: accounts[9]
             });
-            let buyer = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[4]});
+            let buyer = await entityFactory.newEntity(1, true, 'PH', {from: accounts[4]});
 
             let trustContract = await TrustRE.at(trust.logs[0].args.trust);
             let loan = await trustContract.newLoanProposal(
@@ -101,13 +114,17 @@ contract('SmartTrustRE', (accounts) => {
 
         it('verifies that entity funded the loan was the lender', async () => {
             let entityFactory = await EntityFactory.new();
-            let contract = await SmartTrustRE.new(entityFactory.address, {from: accounts[9]});
+            let trusteeFactory = await TrusteeFactory.new();
+            let contract = await DexRE.new(entityFactory.address, trusteeFactory.address);
+            await entityFactory.setDexRE(contract.address);
+            await trusteeFactory.setDexRE(contract.address);
+            let trustee = await trusteeFactory.newTrustee('Test Trustee', {from: accounts[2]});
 
-            let entity = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[3]});
-            let trust = await contract.newTrust('Test Trust', 'Test Property', entity.logs[0].args.entity, {
+            let entity = await entityFactory.newEntity(1, true, 'PH', {from: accounts[3]});
+            let trust = await contract.newTrust(trustee.logs[0].args.trustee, 'Test Trust', 'Test Property', entity.logs[0].args.entity, {
                 from: accounts[9]
             });
-            let buyer = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[4]});
+            let buyer = await entityFactory.newEntity(1, true, 'PH', {from: accounts[4]});
 
             let trustContract = await TrustRE.at(trust.logs[0].args.trust);
             let loan = await trustContract.newLoanProposal(
@@ -128,13 +145,17 @@ contract('SmartTrustRE', (accounts) => {
 
         it('verifies that funding trust loan failed when loan was already funded', async () => {
             let entityFactory = await EntityFactory.new();
-            let contract = await SmartTrustRE.new(entityFactory.address, {from: accounts[9]});
+            let trusteeFactory = await TrusteeFactory.new();
+            let contract = await DexRE.new(entityFactory.address, trusteeFactory.address);
+            await entityFactory.setDexRE(contract.address);
+            await trusteeFactory.setDexRE(contract.address);
+            let trustee = await trusteeFactory.newTrustee('Test Trustee', {from: accounts[2]});
 
-            let entity = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[3]});
-            let trust = await contract.newTrust('Test Trust', 'Test Property', entity.logs[0].args.entity, {
+            let entity = await entityFactory.newEntity(1, true, 'PH', {from: accounts[3]});
+            let trust = await contract.newTrust(trustee.logs[0].args.trustee, 'Test Trust', 'Test Property', entity.logs[0].args.entity, {
                 from: accounts[9]
             });
-            let buyer = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[4]});
+            let buyer = await entityFactory.newEntity(1, true, 'PH', {from: accounts[4]});
 
             let trustContract = await TrustRE.at(trust.logs[0].args.trust);
             let loan = await trustContract.newLoanProposal(
@@ -162,13 +183,17 @@ contract('SmartTrustRE', (accounts) => {
 
         it('verifies that beneficiary will have the total amount of the loan', async () => {
             let entityFactory = await EntityFactory.new();
-            let contract = await SmartTrustRE.new(entityFactory.address, {from: accounts[9]});
+            let trusteeFactory = await TrusteeFactory.new();
+            let contract = await DexRE.new(entityFactory.address, trusteeFactory.address);
+            await entityFactory.setDexRE(contract.address);
+            await trusteeFactory.setDexRE(contract.address);
+            let trustee = await trusteeFactory.newTrustee('Test Trustee', {from: accounts[2]});
 
-            let entity = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[3]});
-            let trust = await contract.newTrust('Test Trust', 'Test Property', entity.logs[0].args.entity, {
+            let entity = await entityFactory.newEntity(1, true, 'PH', {from: accounts[3]});
+            let trust = await contract.newTrust(trustee.logs[0].args.trustee, 'Test Trust', 'Test Property', entity.logs[0].args.entity, {
                 from: accounts[9]
             });
-            let buyer = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[4]});
+            let buyer = await entityFactory.newEntity(1, true, 'PH', {from: accounts[4]});
             let trustContract = await TrustRE.at(trust.logs[0].args.trust);
             let loan = await trustContract.newLoanProposal(
               loanData.amount,
@@ -183,20 +208,24 @@ contract('SmartTrustRE', (accounts) => {
             assert.equal(Number(loanAmount), loanData.amount);
             await contract.fundLoan(trust.logs[0].args.trust, {from: accounts[4], value: loanData.amount});
             let entityContract = await Entity.at(entity.logs[0].args.entity);
-            let funds = await entityContract.availableFunds({from: accounts[3]});
+            let funds = await entityContract.availableFunds.call('DexRE', {from: accounts[3]});
             assert.equal(funds, loanData.amount);
         });
 
         it('verifies that beneficiaries will have correct amount when the loan amount was equally divided', async () => {
             let entityFactory = await EntityFactory.new();
-            let contract = await SmartTrustRE.new(entityFactory.address, {from: accounts[9]});
+            let trusteeFactory = await TrusteeFactory.new();
+            let contract = await DexRE.new(entityFactory.address, trusteeFactory.address);
+            await entityFactory.setDexRE(contract.address);
+            await trusteeFactory.setDexRE(contract.address);
+            let trustee = await trusteeFactory.newTrustee('Test Trustee', {from: accounts[2]});
 
-            let entity = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[3]});
-            let entity2 = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[4]});
-            let entity3 = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[5]});
-            let entity4 = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[6]});
+            let entity = await entityFactory.newEntity(1, true, 'PH', {from: accounts[3]});
+            let entity2 = await entityFactory.newEntity(1, true, 'PH', {from: accounts[4]});
+            let entity3 = await entityFactory.newEntity(1, true, 'PH', {from: accounts[5]});
+            let entity4 = await entityFactory.newEntity(1, true, 'PH', {from: accounts[6]});
 
-            let trust = await contract.newTrust('Test Trust', 'Test Property', entity.logs[0].args.entity, {
+            let trust = await contract.newTrust(trustee.logs[0].args.trustee, 'Test Trust', 'Test Property', entity.logs[0].args.entity, {
                 from: accounts[9]
             });
             let trustContract = await TrustRE.at(trust.logs[0].args.trust);
@@ -210,7 +239,7 @@ contract('SmartTrustRE', (accounts) => {
 
             let beneficiariesCount = await trustContract.beneficiariesCount.call();
 
-            let buyer = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[8]});
+            let buyer = await entityFactory.newEntity(1, true, 'PH', {from: accounts[8]});
             let loan = await trustContract.newLoanProposal(
               loanData.amount,
               loanData.interest,
@@ -236,20 +265,24 @@ contract('SmartTrustRE', (accounts) => {
 
             for(let i = 0; i < beneficiaries.length; i++) {
               let entityContract = await Entity.at(beneficiaries[i].entity);
-              let funds = await entityContract.availableFunds({from: beneficiaries[i].owner});
+              let funds = await entityContract.availableFunds.call('DexRE', {from: beneficiaries[i].owner});
               assert.equal(funds, (loanData.amount / beneficiaries.length));
             }
         });
 
         it('verifies that beneficiaries will have correct amount when the loan amount was equally divided', async () => {
             let entityFactory = await EntityFactory.new();
-            let contract = await SmartTrustRE.new(entityFactory.address, {from: accounts[9]});
+            let trusteeFactory = await TrusteeFactory.new();
+            let contract = await DexRE.new(entityFactory.address, trusteeFactory.address);
+            await entityFactory.setDexRE(contract.address);
+            await trusteeFactory.setDexRE(contract.address);
+            let trustee = await trusteeFactory.newTrustee('Test Trustee', {from: accounts[2]});
 
-            let entity = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[3]});
-            let entity2 = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[4]});
-            let entity3 = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[5]});
+            let entity = await entityFactory.newEntity(1, true, 'PH', {from: accounts[3]});
+            let entity2 = await entityFactory.newEntity(1, true, 'PH', {from: accounts[4]});
+            let entity3 = await entityFactory.newEntity(1, true, 'PH', {from: accounts[5]});
 
-            let trust = await contract.newTrust('Test Trust', 'Test Property', entity.logs[0].args.entity, {
+            let trust = await contract.newTrust(trustee.logs[0].args.trustee, 'Test Trust', 'Test Property', entity.logs[0].args.entity, {
                 from: accounts[9]
             });
             let trustContract = await TrustRE.at(trust.logs[0].args.trust);
@@ -260,7 +293,7 @@ contract('SmartTrustRE', (accounts) => {
 
             let beneficiariesCount = await trustContract.beneficiariesCount.call();
 
-            let buyer = await entityFactory.newEntity(contract.address, 1, true, 'PH', {from: accounts[8]});
+            let buyer = await entityFactory.newEntity(1, true, 'PH', {from: accounts[8]});
             let loan = await trustContract.newLoanProposal(
               loanData.amount,
               loanData.interest,
@@ -284,7 +317,7 @@ contract('SmartTrustRE', (accounts) => {
 
             for(let i = 0; i < beneficiaries.length; i++) {
               let entityContract = await Entity.at(beneficiaries[i].entity);
-              let funds = await entityContract.availableFunds({from: beneficiaries[i].owner});
+              let funds = await entityContract.availableFunds.call('DexRE', {from: beneficiaries[i].owner});
               assert.equal(Number(funds), (loanData.amount / beneficiaries.length));
             }
         });

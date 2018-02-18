@@ -1,4 +1,4 @@
-pragma solidity ^0.4.15;
+pragma solidity ^0.4.4;
 import { Loan } from './Loan.sol';
 
 contract LoanableTrust {

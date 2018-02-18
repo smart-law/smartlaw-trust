@@ -1,8 +1,7 @@
-const EntityFactory = artifacts.require('./EntityFactory.sol');
-const SmartTrustRE = artifacts.require('./SmartTrustRE.sol');
-const Entity = artifacts.require('./Entity.sol');
-const Trust = artifacts.require('./Trust.sol');
-const utils = require('../helpers/Utils');
+const EntityFactory = artifacts.require('EntityFactory');
+const DexRE = artifacts.require('DexRE');
+const Entity = artifacts.require('Entity');
+const utils = require('../Utils');
 
 contract('EntityFactory', (accounts) => {
     describe('entityAddress()', () => {
@@ -14,8 +13,9 @@ contract('EntityFactory', (accounts) => {
 
         it('verifies that an address has an entity address', async () => {
             let contract = await EntityFactory.new();
-            let smartTrustRE = await SmartTrustRE.new(contract.address);
-            let entity = await contract.newEntity(smartTrustRE.address, 1, true, 'PH', {from: accounts[1]});
+            let dexRE = await DexRE.new(contract.address, '0x0');
+            await contract.setDexRE(dexRE.address);
+            let entity = await contract.newEntity(1, true, 'PH', {from: accounts[1]});
             let res = await contract.entityAddress(accounts[1]);
             assert.equal(res, entity.logs[0].args.entity);
         });

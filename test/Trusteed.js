@@ -1,6 +1,6 @@
 
-const Trusteed = artifacts.require('./Trusteed.sol');
-const utils = require('./helpers/Utils');
+const Trusteed = artifacts.require('Trusteed');
+const utils = require('./Utils');
 
 contract('Trusteed', (accounts) => {
     it('verifies the trustee after construction', async () => {

@@ -1,13 +1,10 @@
-const SmartTrustRE = artifacts.require('./SmartTrustRE.sol');
-const EntityFactory = artifacts.require('./EntityFactory.sol');
-const Entity = artifacts.require('./Entity.sol');
-const utils = require('../helpers/Utils');
+const DexRE = artifacts.require('DexRE');
+const utils = require('../Utils');
 
-contract('SmartTrustRE', (accounts) => {
+contract('DexRE', (accounts) => {
     describe('updateStatus()', () => {
         it('verifies that only owner can deactivate or activate contract', async () => {
-            let entityFactory = await EntityFactory.new();
-            let contract = await SmartTrustRE.new(entityFactory.address);
+            let contract = await DexRE.new('0x0', '0x0');
             try {
                 await contract.updateStatus(true, {from: accounts[8]});
                 assert(false, "didn't throw");
@@ -18,8 +15,7 @@ contract('SmartTrustRE', (accounts) => {
         });
 
         it('verifies contract status after owner deactivate or activate contract', async () => {
-            let entityFactory = await EntityFactory.new();
-            let contract = await SmartTrustRE.new(entityFactory.address);
+            let contract = await DexRE.new('0x0', '0x0');
             await contract.updateStatus(false);
             let status = await contract.status.call();
             assert.equal(status, false);

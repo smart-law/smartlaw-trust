@@ -1,4 +1,4 @@
-pragma solidity ^0.4.15;
+pragma solidity ^0.4.4;
 import { Sale } from './Sale.sol';
 
 contract SalableTrust {
